@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 def generate_ar1_noise(phi, variance, n_steps, seed=None):
     """
     Core AR(1) noise generator.
@@ -30,8 +31,9 @@ def generate_ar1_noise(phi, variance, n_steps, seed=None):
     x = np.empty(n_steps, float)
     x[0] = rng.normal(0.0, np.sqrt(variance))
     for i in range(1, n_steps):
-        x[i] = phi * x[i-1] + rng.normal(0.0, sigma_eps)
+        x[i] = phi * x[i - 1] + rng.normal(0.0, sigma_eps)
     return x
+
 
 def generate_ar1_noise_using_tau(tau_days, dt_days, variance, n_tau_steps, seed=None):
     """
@@ -41,7 +43,7 @@ def generate_ar1_noise_using_tau(tau_days, dt_days, variance, n_tau_steps, seed=
     Parameters
     ----------
     tau_days : float
-        E‐folding autocorrelation timescale (days).  If tau_days<=0,  
+        E‐folding autocorrelation timescale (days).  If tau_days<=0,
         we treat it as white noise (phi=0).
     dt_days : float
         Time‐step resolution (days).
@@ -61,6 +63,10 @@ def generate_ar1_noise_using_tau(tau_days, dt_days, variance, n_tau_steps, seed=
     phi = np.exp(-dt_days / tau_days) if tau_days > 0 else 0.0
 
     # number of steps
-    N = int(round(n_tau_steps * tau_days / dt_days)) if tau_days > 0 else int(round(n_tau_steps))
+    N = (
+        int(round(n_tau_steps * tau_days / dt_days))
+        if tau_days > 0
+        else int(round(n_tau_steps))
+    )
     # if tau_days <= 0, interpret n_tau_steps directly as n_steps
     return generate_ar1_noise(phi, variance, N, seed)

@@ -29,8 +29,16 @@ pillow = ">=11.1.0,<12"
 [tool.pixi.environments]
 default = { solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
-dev = { features = ["lint"], solve-group = "default" }
+dev = { features = ["lint", "format"], solve-group = "default" }
 
 [dependency-groups]
 test = ["pytest"]
 lint = ["ruff"]
+format = ["black[jupyter]"]
+
+[tool.ruff]
+line-length = 88
+lint.ignore = ["E501"]
+
+[tool.black]
+line-length = 88
