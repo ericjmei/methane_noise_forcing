@@ -1,6 +1,6 @@
-from .utils import generate_ar1_noise_using_tau, generate_ar1_noise
+from .utils import compute_ar1_params_from_tau, generate_ar1_noise
 
 __all__ = [
-    "generate_ar1_noise_using_tau",
+    "compute_ar1_params_from_tau",
     "generate_ar1_noise",
 ]

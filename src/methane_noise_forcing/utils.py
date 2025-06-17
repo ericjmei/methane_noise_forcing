@@ -3,70 +3,74 @@
 import numpy as np
 
 
-def generate_ar1_noise(phi, variance, n_steps, seed=None):
+def generate_ar1_noise(
+    phi: float,
+    sigma_eps: float,
+    n_steps: int,
+    rng: np.random.Generator = None
+) -> np.ndarray:
     """
     Core AR(1) noise generator.
 
     Parameters
     ----------
     phi : float
-        AR(1) coefficient, must satisfy |phi|<1.  For white noise use phi=0.
-    variance : float
-        Stationary variance of the process.
+        AR(1) coefficient, must satisfy |phi|<1. For white noise use phi=0.
+    sigma_eps : float
+        Standard deviation of the innovation (noise) term. Assumes 0 power outside nyquist frequency.
     n_steps : int
         Length of time series to generate.
-    seed : int, optional
-        RNG seed for reproducibility.
+    rng : np.random.Generator, optional
+        Random number generator for reproducibility. If None, a new default_rng() is used.
 
     Returns
     -------
     x : ndarray of shape (n_steps,)
         The AR(1) noise series.
     """
-    rng = np.random.default_rng(seed)
-    # innovations sd so that Var[x] = variance
-    sigma_eps = np.sqrt(variance * (1 - phi**2))
+    # Use provided RNG or create a new one
+    if rng is None:
+        rng = np.random.default_rng()
 
-    # initialize
     x = np.empty(n_steps, float)
-    x[0] = rng.normal(0.0, np.sqrt(variance))
+    # compute initial variance for stationary distribution
+    if abs(phi) < 1:
+        var_init = sigma_eps**2 / (1 - phi**2)
+    else:
+        var_init = 0.0
+    x[0] = rng.normal(0.0, np.sqrt(var_init))
     for i in range(1, n_steps):
         x[i] = phi * x[i - 1] + rng.normal(0.0, sigma_eps)
     return x
 
 
-def generate_ar1_noise_using_tau(tau_days, dt_days, variance, n_tau_steps, seed=None):
+def compute_ar1_params_from_tau(
+    tau_days: float,
+    dt_days: float,
+    variance: float
+) -> tuple[float, float]:
     """
-    Wrapper that computes phi = exp(-dt/tau) and calls generate_ar1_noise.
-    If you pass tau_days <= 0, it will generate white noise (phi=0).
+    Compute AR(1) parameters phi and sigma_eps from timescale and variance.
 
     Parameters
     ----------
     tau_days : float
-        E‐folding autocorrelation timescale (days).  If tau_days<=0,
-        we treat it as white noise (phi=0).
+        E‐folding autocorrelation timescale (days). If tau_days <= 0, returns phi=0.
     dt_days : float
         Time‐step resolution (days).
     variance : float
-        Stationary variance of the noise.
-    n_tau_steps : float
-        Total simulation length in multiples of tau_days.
-    seed : int, optional
-        RNG seed.
+        Stationary variance of the process.
 
     Returns
     -------
-    x : ndarray
-        Noise series of length N = round(n_tau_steps * tau_days / dt_days).
+    phi : float
+        AR(1) coefficient.
+    sigma_eps : float
+        Standard deviation of the innovation term.
     """
-    # compute φ; if tau_days <= 0 → white noise
-    phi = np.exp(-dt_days / tau_days) if tau_days > 0 else 0.0
-
-    # number of steps
-    N = (
-        int(round(n_tau_steps * tau_days / dt_days))
-        if tau_days > 0
-        else int(round(n_tau_steps))
-    )
-    # if tau_days <= 0, interpret n_tau_steps directly as n_steps
-    return generate_ar1_noise(phi, variance, N, seed)
+    if tau_days > 0:
+        phi = np.exp(-dt_days / tau_days)
+    else:
+        phi = 0.0
+    sigma_eps = np.sqrt(variance * (1 - phi**2))
+    return phi, sigma_eps
