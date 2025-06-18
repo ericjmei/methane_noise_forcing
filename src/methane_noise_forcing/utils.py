@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-
 def generate_ar1_noise(
     phi: float,
     sigma_eps: float,
@@ -43,34 +42,45 @@ def generate_ar1_noise(
         x[i] = phi * x[i - 1] + rng.normal(0.0, sigma_eps)
     return x
 
-
 def compute_ar1_params_from_tau(
     tau_days: float,
     dt_days: float,
     variance: float
-) -> tuple[float, float]:
+) -> tuple[float, float, float]:
     """
-    Compute AR(1) parameters phi and sigma_eps from timescale and variance.
+    Compute AR(1) params from e‐folding timescale and stationary variance.
 
     Parameters
     ----------
     tau_days : float
-        E‐folding autocorrelation timescale (days). If tau_days <= 0, returns phi=0.
+        E‐folding autocorrelation timescale (days). If tau_days <= 0,
+        we treat it as pure white noise (phi=0).
     dt_days : float
         Time‐step resolution (days).
     variance : float
-        Stationary variance of the process.
+        Stationary variance of the process (Var[X]).
 
     Returns
     -------
     phi : float
         AR(1) coefficient.
+    sigma_cont : float
+        Continuous‐time diffusion coeff (state / sqrt(day)).
     sigma_eps : float
-        Standard deviation of the innovation term.
+        Discrete‐time innovation std-dev (state units).
     """
     if tau_days > 0:
+        # AR(1) persistence
         phi = np.exp(-dt_days / tau_days)
+        # continuous‐time diffusion coeff from Var[X] = sigma_cont^2 * tau / 2
+        sigma_cont = np.sqrt(2 * variance / tau_days)
+        # discrete innovation over dt
+        sigma_eps = sigma_cont * np.sqrt(dt_days)
     else:
+        # white noise: no memory
         phi = 0.0
-    sigma_eps = np.sqrt(variance * (1 - phi**2))
-    return phi, sigma_eps
+        # infer sigma_cont so that sigma_eps = sqrt(variance)
+        sigma_eps = np.sqrt(variance)
+        sigma_cont = sigma_eps / np.sqrt(dt_days)
+
+    return phi, sigma_cont, sigma_eps
