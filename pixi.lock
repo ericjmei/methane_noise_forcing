@@ -1337,7 +1337,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py312h66e93f0_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb8e6e7a_2.conda
       - pypi: https://files.pythonhosted.org/packages/1b/fc/58b3c209fdd383744b27914d0b88d0f9db72aa043e1475618d981d7089d9/bagit-1.8.1-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/6f/22/b99efca33f1f3a1d2552c714b1e1b5ae92efac6c43e790ad539a163d1754/black-25.1.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f7/d2/6a81a9b5311d50542e11218b470dafd8adbaf1b3e51fc1fddd8a57eed691/demjson3-3.0.6.tar.gz
       - pypi: https://files.pythonhosted.org/packages/50/3d/9373ad9c56321fdab5b41197068e1d8c25883b3fea29dd361f9b55116869/dill-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/da/d3/13ee227a148af1c693654932b8b0b02ed64af5e1f7406d56b088b57574cd/joblib-1.5.0-py3-none-any.whl
@@ -1345,11 +1344,9 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/cb/da/8341fd3056419441286c8e26bf436923021005ece0bff5f41906476ae514/llvmlite-0.44.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/bf/b6/5f922792be93b82ec6b5f270bbb1ef031fd0622847070bbcf9da816502cc/multiprocess-0.70.18-py312-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7d/6d/08b4a5aaf86200a15fb544118b6ded76f85cd508dad6e8aa47e70a0bfa4c/multitaper-1.2.0.tar.gz
-      - pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/e3/e6e717a2446a1941b800c8f93c2b015dfd2f1275427ea2fbbc2dfa0056e5/nitime-0.11-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/9a/2d/e518df036feab381c23a624dac47f8445ac55686ec7f11083655eb707da3/numba-0.61.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/11/0a/daece46e65c821d153746566a1604ac90338f0279b1fb858a3617eb60472/pathos-0.3.4-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/87/2b/b50d3d08ea0fc419c183a84210571eba005328efa62b6b98bc28e9ead32a/patsy-1.0.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0d/c2/6435789c26661bef699868ee54d2763aea636a1ed21ec8e350b1f9f65888/pox-0.3.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5b/23/6aef7c24f4ee6f765aeaaaa3bf24cfdb0730a20336a02b1a061d227d84be/ppft-1.7.7-py3-none-any.whl
@@ -1363,7 +1360,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/17/7d/4ea3d1d9c1b510efe0a0b3765055da080cc3185092537a92e06aaee14177/tftb-0.1.4.tar.gz
       - pypi: https://files.pythonhosted.org/packages/32/d5/f9a850d79b0851d1d4ef6456097579a9005b31fea68726a4ae5f2d82ddd9/threadpoolctl-3.6.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/87/ba/576aac29b10dfa49a6ce650001d1bb31f81e734660555eaf144bfe5b8995/tokenize_rt-6.1.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8f/b7/559f59d57d18b44c6d1250d2eeaa676e028b9c527431f5d0736478a73ba1/Unidecode-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/47/6a/62e288da7bcda82b935ff0c6cfe542970f04e29c756b0e147251b2fb251f/wget-3.2.zip
@@ -1644,7 +1640,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zstandard-0.23.0-py312h01d7ebd_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zstd-1.5.7-h8210216_2.conda
       - pypi: https://files.pythonhosted.org/packages/1b/fc/58b3c209fdd383744b27914d0b88d0f9db72aa043e1475618d981d7089d9/bagit-1.8.1-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/83/71/3fe4741df7adf015ad8dfa082dd36c94ca86bb21f25608eb247b4afb15b2/black-25.1.0-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f7/d2/6a81a9b5311d50542e11218b470dafd8adbaf1b3e51fc1fddd8a57eed691/demjson3-3.0.6.tar.gz
       - pypi: https://files.pythonhosted.org/packages/50/3d/9373ad9c56321fdab5b41197068e1d8c25883b3fea29dd361f9b55116869/dill-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/da/d3/13ee227a148af1c693654932b8b0b02ed64af5e1f7406d56b088b57574cd/joblib-1.5.0-py3-none-any.whl
@@ -1652,11 +1647,9 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/15/86/e3c3195b92e6e492458f16d233e58a1a812aa2bfbef9bdd0fbafcec85c60/llvmlite-0.44.0-cp312-cp312-macosx_10_14_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/bf/b6/5f922792be93b82ec6b5f270bbb1ef031fd0622847070bbcf9da816502cc/multiprocess-0.70.18-py312-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7d/6d/08b4a5aaf86200a15fb544118b6ded76f85cd508dad6e8aa47e70a0bfa4c/multitaper-1.2.0.tar.gz
-      - pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ac/4e/e3650bcd0f404a24f8f33e0e9f08e16e5320176d7374b9bec3eb5b7624ea/nitime-0.11-cp312-cp312-macosx_10_9_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/b4/a0/c6b7b9c615cfa3b98c4c63f4316e3f6b3bbe2387740277006551784218cd/numba-0.61.2-cp312-cp312-macosx_10_14_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/11/0a/daece46e65c821d153746566a1604ac90338f0279b1fb858a3617eb60472/pathos-0.3.4-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/87/2b/b50d3d08ea0fc419c183a84210571eba005328efa62b6b98bc28e9ead32a/patsy-1.0.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0d/c2/6435789c26661bef699868ee54d2763aea636a1ed21ec8e350b1f9f65888/pox-0.3.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5b/23/6aef7c24f4ee6f765aeaaaa3bf24cfdb0730a20336a02b1a061d227d84be/ppft-1.7.7-py3-none-any.whl
@@ -1670,7 +1663,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/17/7d/4ea3d1d9c1b510efe0a0b3765055da080cc3185092537a92e06aaee14177/tftb-0.1.4.tar.gz
       - pypi: https://files.pythonhosted.org/packages/32/d5/f9a850d79b0851d1d4ef6456097579a9005b31fea68726a4ae5f2d82ddd9/threadpoolctl-3.6.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/87/ba/576aac29b10dfa49a6ce650001d1bb31f81e734660555eaf144bfe5b8995/tokenize_rt-6.1.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8f/b7/559f59d57d18b44c6d1250d2eeaa676e028b9c527431f5d0736478a73ba1/Unidecode-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/47/6a/62e288da7bcda82b935ff0c6cfe542970f04e29c756b0e147251b2fb251f/wget-3.2.zip
@@ -1961,7 +1953,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/zstandard-0.23.0-py313ha7868ed_2.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-hbeecb71_2.conda
       - pypi: https://files.pythonhosted.org/packages/1b/fc/58b3c209fdd383744b27914d0b88d0f9db72aa043e1475618d981d7089d9/bagit-1.8.1-py2.py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/cc/64/94eb5f45dcb997d2082f097a3944cfc7fe87e071907f677e80788a2d7b7a/black-25.1.0-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/f7/d2/6a81a9b5311d50542e11218b470dafd8adbaf1b3e51fc1fddd8a57eed691/demjson3-3.0.6.tar.gz
       - pypi: https://files.pythonhosted.org/packages/50/3d/9373ad9c56321fdab5b41197068e1d8c25883b3fea29dd361f9b55116869/dill-0.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/da/d3/13ee227a148af1c693654932b8b0b02ed64af5e1f7406d56b088b57574cd/joblib-1.5.0-py3-none-any.whl
@@ -1969,11 +1960,9 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d0/81/e66fc86539293282fd9cb7c9417438e897f369e79ffb62e1ae5e5154d4dd/llvmlite-0.44.0-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/ee/25/7d7e78e750bc1aecfaf0efbf826c69a791d2eeaf29cf20cba93ff4cced78/multiprocess-0.70.18-py313-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/7d/6d/08b4a5aaf86200a15fb544118b6ded76f85cd508dad6e8aa47e70a0bfa4c/multitaper-1.2.0.tar.gz
-      - pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2e/a8/efd492ce2763360b6dd1bbcdb87c55a7ced16ef8eaace1f95fe6204ab76b/nitime-0.11.tar.gz
       - pypi: https://files.pythonhosted.org/packages/af/a4/6d3a0f2d3989e62a18749e1e9913d5fa4910bbb3e3311a035baea6caf26d/numba-0.61.2-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/11/0a/daece46e65c821d153746566a1604ac90338f0279b1fb858a3617eb60472/pathos-0.3.4-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/87/2b/b50d3d08ea0fc419c183a84210571eba005328efa62b6b98bc28e9ead32a/patsy-1.0.1-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0d/c2/6435789c26661bef699868ee54d2763aea636a1ed21ec8e350b1f9f65888/pox-0.3.6-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5b/23/6aef7c24f4ee6f765aeaaaa3bf24cfdb0730a20336a02b1a061d227d84be/ppft-1.7.7-py3-none-any.whl
@@ -1987,7 +1976,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/17/7d/4ea3d1d9c1b510efe0a0b3765055da080cc3185092537a92e06aaee14177/tftb-0.1.4.tar.gz
       - pypi: https://files.pythonhosted.org/packages/32/d5/f9a850d79b0851d1d4ef6456097579a9005b31fea68726a4ae5f2d82ddd9/threadpoolctl-3.6.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/87/ba/576aac29b10dfa49a6ce650001d1bb31f81e734660555eaf144bfe5b8995/tokenize_rt-6.1.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8f/b7/559f59d57d18b44c6d1250d2eeaa676e028b9c527431f5d0736478a73ba1/Unidecode-1.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/47/6a/62e288da7bcda82b935ff0c6cfe542970f04e29c756b0e147251b2fb251f/wget-3.2.zip
@@ -4170,60 +4158,6 @@ packages:
   - pkg:pypi/beautifulsoup4?source=compressed-mapping
   size: 146613
   timestamp: 1744783307123
-- pypi: https://files.pythonhosted.org/packages/6f/22/b99efca33f1f3a1d2552c714b1e1b5ae92efac6c43e790ad539a163d1754/black-25.1.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl
-  name: black
-  version: 25.1.0
-  sha256: 3b48735872ec535027d979e8dcb20bf4f70b5ac75a8ea99f127c106a7d7aba9f
-  requires_dist:
-  - click>=8.0.0
-  - mypy-extensions>=0.4.3
-  - packaging>=22.0
-  - pathspec>=0.9.0
-  - platformdirs>=2
-  - tomli>=1.1.0 ; python_full_version < '3.11'
-  - typing-extensions>=4.0.1 ; python_full_version < '3.11'
-  - colorama>=0.4.3 ; extra == 'colorama'
-  - aiohttp>=3.10 ; extra == 'd'
-  - ipython>=7.8.0 ; extra == 'jupyter'
-  - tokenize-rt>=3.2.0 ; extra == 'jupyter'
-  - uvloop>=0.15.2 ; extra == 'uvloop'
-  requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/83/71/3fe4741df7adf015ad8dfa082dd36c94ca86bb21f25608eb247b4afb15b2/black-25.1.0-cp312-cp312-macosx_10_13_x86_64.whl
-  name: black
-  version: 25.1.0
-  sha256: 4b60580e829091e6f9238c848ea6750efed72140b91b048770b64e74fe04908b
-  requires_dist:
-  - click>=8.0.0
-  - mypy-extensions>=0.4.3
-  - packaging>=22.0
-  - pathspec>=0.9.0
-  - platformdirs>=2
-  - tomli>=1.1.0 ; python_full_version < '3.11'
-  - typing-extensions>=4.0.1 ; python_full_version < '3.11'
-  - colorama>=0.4.3 ; extra == 'colorama'
-  - aiohttp>=3.10 ; extra == 'd'
-  - ipython>=7.8.0 ; extra == 'jupyter'
-  - tokenize-rt>=3.2.0 ; extra == 'jupyter'
-  - uvloop>=0.15.2 ; extra == 'uvloop'
-  requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/cc/64/94eb5f45dcb997d2082f097a3944cfc7fe87e071907f677e80788a2d7b7a/black-25.1.0-cp313-cp313-win_amd64.whl
-  name: black
-  version: 25.1.0
-  sha256: a22f402b410566e2d1c950708c77ebf5ebd5d0d88a6a2e87c86d9fb48afa0d18
-  requires_dist:
-  - click>=8.0.0
-  - mypy-extensions>=0.4.3
-  - packaging>=22.0
-  - pathspec>=0.9.0
-  - platformdirs>=2
-  - tomli>=1.1.0 ; python_full_version < '3.11'
-  - typing-extensions>=4.0.1 ; python_full_version < '3.11'
-  - colorama>=0.4.3 ; extra == 'colorama'
-  - aiohttp>=3.10 ; extra == 'd'
-  - ipython>=7.8.0 ; extra == 'jupyter'
-  - tokenize-rt>=3.2.0 ; extra == 'jupyter'
-  - uvloop>=0.15.2 ; extra == 'uvloop'
-  requires_python: '>=3.9'
 - conda: https://conda.anaconda.org/conda-forge/noarch/bleach-6.2.0-pyh29332c3_4.conda
   sha256: a05971bb80cca50ce9977aad3f7fc053e54ea7d5321523efc7b9a6e12901d3cd
   md5: f0b4c8e370446ef89797608d60a564b3
@@ -8906,7 +8840,7 @@ packages:
 - pypi: .
   name: methane-noise-forcing
   version: 0.1.0
-  sha256: dc3bc3504358a9ea4092b5a7ab93955643d0ec288609eb37a0144df0101133d8
+  sha256: 9d71fbbe80ef71b181ddaa51841b583c5c80df58f446cdb77603f84fea68df71
   requires_dist:
   - pyleoclim>=0.8.1,<0.9
   - llvmlite
@@ -9021,11 +8955,6 @@ packages:
   - pkg:pypi/munkres?source=hash-mapping
   size: 12452
   timestamp: 1600387789153
-- pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
-  name: mypy-extensions
-  version: 1.1.0
-  sha256: 1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505
-  requires_python: '>=3.8'
 - conda: https://conda.anaconda.org/conda-forge/linux-64/mysql-common-9.2.0-h266115a_0.conda
   sha256: 571b6a2bffaf186ab92cdb06852fc5b6b5b7c6605de2b397fb13cfb0bb05c375
   md5: db22a0962c953e81a2a679ecb1fc6027
@@ -9660,11 +9589,6 @@ packages:
   - dill>=0.4.0
   - pox>=0.3.6
   - multiprocess>=0.70.18
-  requires_python: '>=3.8'
-- pypi: https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl
-  name: pathspec
-  version: 0.12.1
-  sha256: a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08
   requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/87/2b/b50d3d08ea0fc419c183a84210571eba005328efa62b6b98bc28e9ead32a/patsy-1.0.1-py2.py3-none-any.whl
   name: patsy
@@ -11644,11 +11568,6 @@ packages:
   purls: []
   size: 3503410
   timestamp: 1699202577803
-- pypi: https://files.pythonhosted.org/packages/87/ba/576aac29b10dfa49a6ce650001d1bb31f81e734660555eaf144bfe5b8995/tokenize_rt-6.1.0-py2.py3-none-any.whl
-  name: tokenize-rt
-  version: 6.1.0
-  sha256: d706141cdec4aa5f358945abe36b911b8cbdc844545da99e811250c0cee9b6fc
-  requires_python: '>=3.9'
 - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.2.1-pyhd8ed1ab_1.conda
   sha256: 18636339a79656962723077df9a56c0ac7b8a864329eb8f847ee3d38495b863e
   md5: ac944244f1fed2eb49bae07193ae8215

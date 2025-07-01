@@ -30,12 +30,11 @@ astropy = ">=7.1.0,<8"
 [tool.pixi.environments]
 default = { solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
-dev = { features = ["lint", "format"], solve-group = "default" }
+dev = { features = ["lint"], solve-group = "default" }
 
 [dependency-groups]
 test = ["pytest"]
 lint = ["ruff"]
-format = ["black[jupyter]"]
 
 [tool.ruff]
 line-length = 88
