@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
+
 def generate_ar1_noise(
-    phi: float,
-    sigma_eps: float,
-    n_steps: int,
-    rng: np.random.Generator = None
+    phi: float, sigma_eps: float, n_steps: int, rng: np.random.Generator = None
 ) -> np.ndarray:
     """
     Core AR(1) noise generator.
@@ -42,10 +40,9 @@ def generate_ar1_noise(
         x[i] = phi * x[i - 1] + rng.normal(0.0, sigma_eps)
     return x
 
+
 def compute_ar1_params_from_tau(
-    tau_days: float,
-    dt_days: float,
-    variance: float
+    tau_days: float, dt_days: float, variance: float
 ) -> tuple[float, float, float]:
     """
     Compute AR(1) params from e‐folding timescale and stationary variance.
