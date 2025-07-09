@@ -22,3 +22,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# figures and data
+figures/
+data/
