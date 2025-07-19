@@ -1,0 +1,6 @@
+tau_ch4: 10     # Time constant for methane lifetime
+tau_forcing: 1 # Time constant for forcing
+variance_ch4: 225 # Variance for methane, ppb^2
+duration_timeseries: 1000 # Duration of time series in years
+dt: 0.1 # Time step in years
+n_ens: 10 # Number of ensemble members
