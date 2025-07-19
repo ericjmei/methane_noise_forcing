@@ -3,7 +3,7 @@ authors = [{name = "Eric", email = "eric.mei2000@gmail.com"}]
 name = "methane_noise_forcing"
 requires-python = ">= 3.11"
 version = "0.1.0"
-dependencies = ["pyleoclim>=0.8.1,<0.9", "llvmlite", "multitaper>=1.2.0,<2"]
+dependencies = ["pyleoclim>=0.8.1,<0.9", "llvmlite", "multitaper>=1.2.0,<2", "hydra-core>=1.3.2,<2"]
 
 [build-system]
 build-backend = "hatchling.build"
@@ -39,6 +39,5 @@ lint = ["ruff"]
 [tool.ruff]
 line-length = 88
 lint.ignore = ["E501"]
-
-[tool.black]
-line-length = 88
+lint.select = ["D"]
+lint.pydocstyle.convention = "numpy"

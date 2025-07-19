@@ -26,3 +26,6 @@ Thumbs.db
 # figures and data
 figures/
 data/
+
+# Output files
+outputs/
