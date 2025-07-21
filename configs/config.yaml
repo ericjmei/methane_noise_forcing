@@ -1,6 +1,6 @@
 defaults:
   - noise: two_timescale
-  - _self_
+  - _self_ # inherit global defaults
 
 noise:
   time_units: years
