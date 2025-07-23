@@ -30,6 +30,7 @@ def shift_kernel(kernel, offset, dt):
     idx = np.arange(len(kernel))
     return np.interp(idx - shift_idx, idx, kernel, left=0.0, right=0.0)
 
+
 def taper_kernel(kernel, taper_fraction=0.1):
     """
     Apply a taper to the edges of the kernel to reduce edge effects.
@@ -50,6 +51,7 @@ def taper_kernel(kernel, taper_fraction=0.1):
     kernel_tapered = kernel * taper
     kernel_tapered /= np.trapezoid(kernel_tapered)  # normalize the tapered kernel
     return kernel_tapered
+
 
 def gamma_kernel(k, theta, t_max=200, dt=1.0, offset=0.0, taper_fraction=0.1):
     """
@@ -82,7 +84,9 @@ def gamma_kernel(k, theta, t_max=200, dt=1.0, offset=0.0, taper_fraction=0.1):
     # causal gamma PDF on t>0
     kernel = np.zeros_like(t)
     mask = t > 0
-    kernel[mask] = (t[mask]**(k - 1) * np.exp(-t[mask]/theta)) / (theta**k * gamma(k))
+    kernel[mask] = (t[mask] ** (k - 1) * np.exp(-t[mask] / theta)) / (
+        theta**k * gamma(k)
+    )
 
     # taper before shift
     kernel = taper_kernel(kernel, taper_fraction=taper_fraction)
@@ -125,8 +129,9 @@ def fit_gamma_params(mode, fwhm, skew, k0=6.5):
     offset : float
         Time shift (years) to move the intrinsic mode to `mode`.
     """
+
     def pdf(t, k, theta):
-        return (t**(k - 1) * np.exp(-t/theta)) / (theta**k * gamma(k))
+        return (t ** (k - 1) * np.exp(-t / theta)) / (theta**k * gamma(k))
 
     def equations(params):
         k, theta = params
@@ -153,6 +158,7 @@ def fit_gamma_params(mode, fwhm, skew, k0=6.5):
     offset = mode - mode0
 
     return k_fit, theta_fit, offset
+
 
 def log_logistic_kernel(alpha, beta, t_max=200, dt=1.0, offset=0.0, taper_fraction=0.1):
     """
@@ -181,7 +187,7 @@ def log_logistic_kernel(alpha, beta, t_max=200, dt=1.0, offset=0.0, taper_fracti
     kernel : np.ndarray
         Normalized, tapered, and shifted log-logistic PDF values.
     """
-    t = np.arange(0, t_max + dt, dt) # time axis
+    t = np.arange(0, t_max + dt, dt)  # time axis
 
     # un-shifted log-logistic PDF (causal: zero before t=0)
     kernel = np.zeros_like(t)
@@ -203,6 +209,7 @@ def log_logistic_kernel(alpha, beta, t_max=200, dt=1.0, offset=0.0, taper_fracti
     kernel /= np.trapezoid(kernel, t)
 
     return t, kernel
+
 
 def fit_log_logistic_params(mode, fwhm, skew, beta0=3.0):
     """
@@ -230,16 +237,14 @@ def fit_log_logistic_params(mode, fwhm, skew, beta0=3.0):
     offset : float
         Time shift so that the kernel’s peak is at `mode`.
     """
-    import numpy as np
-    from scipy.optimize import fsolve
 
     def pdf(t, a, b):
-        return (b / a) * (t / a)**(b - 1) / (1 + (t / a)**b)**2
+        return (b / a) * (t / a) ** (b - 1) / (1 + (t / a) ** b) ** 2
 
     def equations(params):
         a, b = params
         # 1) intrinsic mode of the un-shifted PDF
-        mode0 = a * ((b - 1) / (b + 1))**(1.0 / b)
+        mode0 = a * ((b - 1) / (b + 1)) ** (1.0 / b)
         peak = pdf(mode0, a, b)
         half = peak / 2
 
@@ -253,14 +258,15 @@ def fit_log_logistic_params(mode, fwhm, skew, beta0=3.0):
         return [eq1, eq2]
 
     # Initial guesses
-    alpha0 = mode / (((beta0 - 1) / (beta0 + 1))**(1.0 / beta0))
+    alpha0 = mode / (((beta0 - 1) / (beta0 + 1)) ** (1.0 / beta0))
     a_fit, b_fit = fsolve(equations, x0=[alpha0, beta0])
 
     # Compute offset to shift mode0 → mode
-    mode0 = a_fit * ((b_fit - 1) / (b_fit + 1))**(1.0 / b_fit)
+    mode0 = a_fit * ((b_fit - 1) / (b_fit + 1)) ** (1.0 / b_fit)
     offset = mode - mode0
 
     return a_fit, b_fit, offset
+
 
 def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
     """
@@ -303,7 +309,7 @@ def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
       ``np.convolve(series, kernel_interp, mode="full")[:N]`` but is
       much faster for long records.
     """
-    # ---------- 1. interpolate kernel onto the series grid ------------------
+    # interpolate kernel onto the series grid
     max_tau = kernel_t[-1]
     n_kernel_series = int(np.floor(max_tau / dt_series)) + 1
     t_uniform = np.arange(n_kernel_series) * dt_series
@@ -313,7 +319,7 @@ def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
     kernel_uniform = np.maximum(kernel_uniform, 0.0)
     kernel_uniform /= kernel_uniform.sum()  # normalise
 
-    # ---------- 2. FFT-based linear convolution ----------------------------
+    # FFT-based linear convolution
     N = len(series)
     L = len(kernel_uniform)
     n_fft = 1 << int(np.ceil(np.log2(N + L)))  # next power of 2
@@ -322,5 +328,5 @@ def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
     K_f = np.fft.rfft(kernel_uniform, n=n_fft)
     smoothed_full = np.fft.irfft(S_f * K_f, n=n_fft)
 
-    # ---------- 3. trim to original length ---------------------------------
+    # trim to original length
     return smoothed_full[:N]

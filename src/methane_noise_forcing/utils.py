@@ -165,6 +165,7 @@ def calculate_two_timescale_ar1_params(
 def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, N, n_ens, seed=42):
     """
     Simulate a two‐timescale AR(1) process with given parameters.
+
     Parameters
     ----------
     tau_x : float

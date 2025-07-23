@@ -2,7 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from .filters import gamma_kernel, fit_gamma_params, log_logistic_kernel, fit_log_logistic_params, firn_convolve
+from .filters import (
+    gamma_kernel,
+    fit_gamma_params,
+    log_logistic_kernel,
+    fit_log_logistic_params,
+    firn_convolve,
+)
+
 
 class FirnFilter:
     def __init__(self, kernel: np.ndarray, dt: float = 1.0):
@@ -14,7 +21,16 @@ class FirnFilter:
         self.dt = dt
 
     @classmethod
-    def fit_gamma(cls, mode: float, fwhm: float, skew: float = 0.7, t_max: float = 200, dt: float = 1.0, k0: float = 6.5, **kwargs):
+    def fit_gamma(
+        cls,
+        mode: float,
+        fwhm: float,
+        skew: float = 0.7,
+        t_max: float = 200,
+        dt: float = 1.0,
+        k0: float = 6.5,
+        **kwargs,
+    ):
         """
         Create a FirnFilter from a gamma kernel with specified mode and FWHM.
 
@@ -43,12 +59,20 @@ class FirnFilter:
         FirnFilter
             An instance of FirnFilter with the gamma kernel.
         """
-        k, theta, offset = fit_gamma_params(mode, fwhm, skew=skew,k0=k0)
+        k, theta, offset = fit_gamma_params(mode, fwhm, skew=skew, k0=k0)
         t, kernel = gamma_kernel(k, theta, t_max=t_max, dt=dt, offset=offset, **kwargs)
         return cls(kernel, dt)
 
     @classmethod
-    def from_gamma_params(cls, k: float, theta: float, t_max: float = 200, dt: float = 1.0, offset: float = 0.0, **kwargs):
+    def from_gamma_params(
+        cls,
+        k: float,
+        theta: float,
+        t_max: float = 200,
+        dt: float = 1.0,
+        offset: float = 0.0,
+        **kwargs,
+    ):
         """
         Create a FirnFilter from gamma parameters.
 
@@ -74,9 +98,17 @@ class FirnFilter:
         """
         t, g = gamma_kernel(k, theta, t_max=t_max, dt=dt, offset=offset, **kwargs)
         return cls(g, dt)
-    
+
     @classmethod
-    def fit_log_logistic(cls, mode: float, fwhm: float, skew: float = 0.7, t_max: float = 200, dt: float = 1.0, **kwargs):
+    def fit_log_logistic(
+        cls,
+        mode: float,
+        fwhm: float,
+        skew: float = 0.7,
+        t_max: float = 200,
+        dt: float = 1.0,
+        **kwargs,
+    ):
         """
         Create a FirnFilter from a log-logistic kernel with specified mode, FWHM, and skew.
 
@@ -102,11 +134,21 @@ class FirnFilter:
             An instance of FirnFilter with the log-logistic kernel.
         """
         alpha, beta, offset = fit_log_logistic_params(mode, fwhm, skew, beta0=3.0)
-        t, g = log_logistic_kernel(alpha, beta, t_max=t_max, dt=dt, offset=offset, **kwargs)
+        t, g = log_logistic_kernel(
+            alpha, beta, t_max=t_max, dt=dt, offset=offset, **kwargs
+        )
         return cls(g, dt)
-    
+
     @classmethod
-    def from_log_logistic_params(cls, alpha: float, beta: float, t_max: float = 200, dt: float = 1.0, offset: float = 0.0, **kwargs):
+    def from_log_logistic_params(
+        cls,
+        alpha: float,
+        beta: float,
+        t_max: float = 200,
+        dt: float = 1.0,
+        offset: float = 0.0,
+        **kwargs,
+    ):
         """
         Create a FirnFilter from log-logistic parameters.
 
@@ -130,7 +172,9 @@ class FirnFilter:
         FirnFilter
             An instance of FirnFilter with the log-logistic kernel.
         """
-        t, g = log_logistic_kernel(alpha, beta, t_max=t_max, dt=dt, offset=offset, **kwargs)
+        t, g = log_logistic_kernel(
+            alpha, beta, t_max=t_max, dt=dt, offset=offset, **kwargs
+        )
         return cls(g, dt)
 
     def apply(self, series: np.ndarray, dt_series=1.0) -> np.ndarray:
