@@ -4,7 +4,7 @@
 import numpy as np
 from math import gamma
 from scipy.optimize import fsolve
-
+from scipy.signal.windows import tukey
 
 def gamma_kernel(k, theta, t_max=200, dt=1.0):
     """
@@ -25,13 +25,15 @@ def gamma_kernel(k, theta, t_max=200, dt=1.0):
     -------
     t : ndarray
         1D array of time points from 0 to t_max in steps of dt.
-    g : ndarray
+    kernel : ndarray
         Normalized gamma PDF values at each t (i.e. ∫ g(t) dt = 1).
     """
     t = np.arange(0.0, t_max + dt, dt)
-    g = (t ** (k - 1)) * np.exp(-t / theta) / ((theta**k) * gamma(k))
-    g /= np.trapezoid(g, t)
-    return t, g
+    kernel = (t ** (k - 1)) * np.exp(-t / theta) / ((theta**k) * gamma(k))
+    kernel /= np.trapezoid(kernel, t)
+
+    kernel = taper_kernel(kernel)  # Apply tapering to reduce edge effects
+    return t, kernel
 
 
 def fit_gamma_params(mode, fwhm, k0=6.5):
@@ -79,6 +81,117 @@ def fit_gamma_params(mode, fwhm, k0=6.5):
     k_fit, theta_fit = fsolve(equations, x0=[k0, mode / (k0 - 1)])
     return k_fit, theta_fit
 
+def log_logistic_kernel(alpha, beta, t_max=200, dt=1.0, offset=0.0, taper_fraction=0.1):
+    """
+    Generate a log-logistic kernel for firn smoothing, with edge taper
+    applied *before* the time shift.
+
+    Parameters
+    ----------
+    alpha : float
+        Scale parameter of the log-logistic distribution.
+    beta : float
+        Shape parameter of the log-logistic distribution.
+    t_max : float, optional
+        Maximum time for the kernel, default is 200.
+    dt : float, optional
+        Time step for the kernel, default is 1.0.
+    offset : float, optional
+        Time offset to shift the kernel, default is 0.0.
+    taper_fraction : float, optional
+        Fraction of the kernel length to taper (passed to `taper_kernel`).
+
+    Returns
+    -------
+    t : np.ndarray
+        1D array of time points from 0 to t_max in steps of dt.
+    kernel : np.ndarray
+        Normalized, tapered, and shifted log-logistic PDF values.
+    """
+    t = np.arange(0, t_max + dt, dt) # time axis
+
+    # un-shifted log-logistic PDF (causal: zero before t=0)
+    kernel = np.zeros_like(t)
+    positive = t > 0
+    kernel[positive] = (
+        (beta / alpha)
+        * (t[positive] / alpha) ** (beta - 1)
+        / (1 + (t[positive] / alpha) ** beta) ** 2
+    )
+
+    # apply taper to both edges of the causal PDF
+    kernel = taper_kernel(kernel, taper_fraction=taper_fraction)
+
+    # shift the tapered kernel by 'offset' years
+    # compute fractional shift in index-space
+    shift_idx = offset / dt
+    idx = np.arange(len(kernel))
+    # use linear interpolation; anything falling off the ends → 0
+    kernel = np.interp(idx - shift_idx, idx, kernel, left=0.0, right=0.0)
+
+    # final taper + renormalization
+    kernel = taper_kernel(kernel, taper_fraction=taper_fraction)
+    kernel /= np.trapezoid(kernel, t)
+
+    return t, kernel
+
+def fit_log_logistic_params(mode, fwhm, skew, beta0=3.0):
+    """
+    Find log-logistic parameters α, β, and offset so that the PDF has a given FWHM
+    and half-width skew, then shift the mode to the desired location.
+
+    Parameters
+    ----------
+    mode : float
+        Desired mode (peak location) after shifting.
+    fwhm : float
+        Desired full width at half maximum.
+    skew : float
+        Ratio of left to right half-widths at half maximum:
+        skew = (mode0 - t1) / (t2 - mode0).
+    beta0 : float, optional
+        Initial guess for β (must be >1).
+
+    Returns
+    -------
+    alpha_fit : float
+        Fitted scale parameter α.
+    beta_fit : float
+        Fitted shape parameter β.
+    offset : float
+        Time shift so that the kernel’s peak is at `mode`.
+    """
+    import numpy as np
+    from scipy.optimize import fsolve
+
+    def pdf(t, a, b):
+        return (b / a) * (t / a)**(b - 1) / (1 + (t / a)**b)**2
+
+    def equations(params):
+        a, b = params
+        # 1) intrinsic mode of the un-shifted PDF
+        mode0 = a * ((b - 1) / (b + 1))**(1.0 / b)
+        peak = pdf(mode0, a, b)
+        half = peak / 2
+
+        # 2) find the two half-max points
+        t1 = fsolve(lambda tau: pdf(tau, a, b) - half, mode0 * 0.5)[0]
+        t2 = fsolve(lambda tau: pdf(tau, a, b) - half, mode0 * 1.5)[0]
+
+        # Equations to match
+        eq1 = (t2 - t1) - fwhm  # Equation for FWHM
+        eq2 = ((mode0 - t1) / (t2 - mode0)) - skew  # Equation for skew
+        return [eq1, eq2]
+
+    # Initial guesses
+    alpha0 = mode / (((beta0 - 1) / (beta0 + 1))**(1.0 / beta0))
+    a_fit, b_fit = fsolve(equations, x0=[alpha0, beta0])
+
+    # Compute offset to shift mode0 → mode
+    mode0 = a_fit * ((b_fit - 1) / (b_fit + 1))**(1.0 / b_fit)
+    offset = mode - mode0
+
+    return a_fit, b_fit, offset
 
 def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
     """
@@ -143,58 +256,23 @@ def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
     # ---------- 3. trim to original length ---------------------------------
     return smoothed_full[:N]
 
+def taper_kernel(kernel, taper_fraction=0.1):
+    """
+    Apply a taper to the edges of the kernel to reduce edge effects.
 
-class FirnFilter:
-    def __init__(self, kernel: np.ndarray, dt: float = 1.0):
-        """
-        kernel: array of G(τ) values at τ = 0, dt, 2dt, ...
-        dt: time-step of the kernel
-        """
-        self.kernel = kernel / kernel.sum()
-        self.dt = dt
+    Parameters
+    ----------
+    kernel : np.ndarray
+        The kernel to be tapered.
+    taper_fraction : float, optional
+        Fraction of the kernel length to apply the taper (default is 0.1).
 
-    @classmethod
-    def from_gamma(cls, mode: float, fwhm: float, dt: float = 1.0):
-        """
-        Create a FirnFilter from a gamma kernel with specified mode and FWHM.
-
-        Parameters
-        ----------
-        mode : float
-            Desired mode (peak location) of the gamma PDF in years.
-        fwhm : float
-            Desired full width at half maximum (years).
-        dt : float, optional
-            Time step for the kernel, default is 1.0.
-
-        Returns
-        -------
-        FirnFilter
-            An instance of FirnFilter with the gamma kernel.
-        """
-        k, theta = fit_gamma_params(mode, fwhm)
-        t, g = gamma_kernel(k, theta, t_max=200, dt=dt)
-        return cls(g, dt)
-
-    def apply(self, series: np.ndarray, dt_series=1.0) -> np.ndarray:
-        """
-        Apply the firn filter to a time series.
-
-        Parameters
-        ----------
-        series : 1-D array_like, shape (N,)
-            The atmospheric or model time-series. It must be sampled at a
-            constant interval of ``dt_series`` (e.g., one value per year).
-        dt_series : float, optional
-            Sampling interval of ``series`` (default = 1.0). Units must match
-            those of the filter kernel.
-
-        Returns
-        -------
-        smoothed : ndarray, shape (N,)
-            The series after convolution with the kernel, aligned to the same
-            time grid as the input ``series``.
-        """
-        return firn_convolve(
-            series, np.arange(len(self.kernel)) * self.dt, self.kernel, dt_series
-        )
+    Returns
+    -------
+    np.ndarray
+        Tapered kernel.
+    """
+    taper = tukey(len(kernel), alpha=taper_fraction)
+    kernel_tapered = kernel * taper
+    kernel_tapered /= np.trapezoid(kernel_tapered)  # normalize the tapered kernel
+    return kernel_tapered
