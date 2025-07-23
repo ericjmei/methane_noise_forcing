@@ -14,7 +14,7 @@ class FirnFilter:
         self.dt = dt
 
     @classmethod
-    def fit_gamma(cls, mode: float, fwhm: float, t_max: float = 200, dt: float = 1.0, k0: float = 6.5, **kwargs):
+    def fit_gamma(cls, mode: float, fwhm: float, skew: float = 0.7, t_max: float = 200, dt: float = 1.0, k0: float = 6.5, **kwargs):
         """
         Create a FirnFilter from a gamma kernel with specified mode and FWHM.
 
@@ -24,6 +24,9 @@ class FirnFilter:
             Desired mode (peak location) of the gamma PDF in years.
         fwhm : float
             Desired full width at half maximum (years).
+        skew : float, optional
+            Ratio of left to right half-widths at half maximum:
+            skew = (mode0 - t1) / (t2 - mode0).
         t_max : float, optional
             Maximum time for the kernel, default is 200.
         dt : float, optional
@@ -40,12 +43,12 @@ class FirnFilter:
         FirnFilter
             An instance of FirnFilter with the gamma kernel.
         """
-        k, theta = fit_gamma_params(mode, fwhm, k0=k0)
-        t, g = gamma_kernel(k, theta, t_max=t_max, dt=dt, **kwargs)
-        return cls(g, dt)
-    
+        k, theta, offset = fit_gamma_params(mode, fwhm, skew=skew,k0=k0)
+        t, kernel = gamma_kernel(k, theta, t_max=t_max, dt=dt, offset=offset, **kwargs)
+        return cls(kernel, dt)
+
     @classmethod
-    def from_gamma_params(cls, k: float, theta: float, t_max: float = 200, dt: float = 1.0, **kwargs):
+    def from_gamma_params(cls, k: float, theta: float, t_max: float = 200, dt: float = 1.0, offset: float = 0.0, **kwargs):
         """
         Create a FirnFilter from gamma parameters.
 
@@ -59,6 +62,8 @@ class FirnFilter:
             Maximum time for the kernel, default is 200.
         dt : float, optional
             Time step for the kernel, default is 1.0.
+        offset : float, optional
+            Time offset to shift the kernel, default is 0.0.
         **kwargs : dict, optional
             Additional keyword arguments for the gamma kernel.
 
@@ -67,7 +72,7 @@ class FirnFilter:
         FirnFilter
             An instance of FirnFilter with the gamma kernel.
         """
-        t, g = gamma_kernel(k, theta, t_max=t_max, dt=dt, **kwargs)
+        t, g = gamma_kernel(k, theta, t_max=t_max, dt=dt, offset=offset, **kwargs)
         return cls(g, dt)
     
     @classmethod

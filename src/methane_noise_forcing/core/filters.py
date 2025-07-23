@@ -4,11 +4,56 @@
 import numpy as np
 from math import gamma
 from scipy.optimize import fsolve
+from scipy.special import gamma
 from scipy.signal.windows import tukey
 
-def gamma_kernel(k, theta, t_max=200, dt=1.0):
+
+def shift_kernel(kernel, offset, dt):
     """
-    Generate a gamma kernel for filtering.
+    Shift a kernel by a specified offset in time.
+
+    Parameters
+    ----------
+    kernel : np.ndarray
+        The kernel to be shifted.
+    offset : float
+        The time offset to shift the kernel (in the same units as dt).
+    dt : float
+        The time step of the kernel.
+
+    Returns
+    -------
+    np.ndarray
+        The shifted kernel.
+    """
+    shift_idx = offset / dt
+    idx = np.arange(len(kernel))
+    return np.interp(idx - shift_idx, idx, kernel, left=0.0, right=0.0)
+
+def taper_kernel(kernel, taper_fraction=0.1):
+    """
+    Apply a taper to the edges of the kernel to reduce edge effects.
+
+    Parameters
+    ----------
+    kernel : np.ndarray
+        The kernel to be tapered.
+    taper_fraction : float, optional
+        Fraction of the kernel length to apply the taper (default is 0.1).
+
+    Returns
+    -------
+    np.ndarray
+        Tapered kernel.
+    """
+    taper = tukey(len(kernel), alpha=taper_fraction)
+    kernel_tapered = kernel * taper
+    kernel_tapered /= np.trapezoid(kernel_tapered)  # normalize the tapered kernel
+    return kernel_tapered
+
+def gamma_kernel(k, theta, t_max=200, dt=1.0, offset=0.0, taper_fraction=0.1):
+    """
+    Generate a gamma kernel for filtering, with pre‐ and post‐shift tapering.
 
     Parameters
     ----------
@@ -16,70 +61,98 @@ def gamma_kernel(k, theta, t_max=200, dt=1.0):
         Shape parameter of the gamma distribution.
     theta : float
         Scale parameter of the gamma distribution.
-    t_max : int, optional
+    t_max : float, optional
         Maximum time for the kernel, default is 200.
     dt : float, optional
         Time step for the kernel, default is 1.0.
+    offset : float, optional
+        Time offset (years) to shift the kernel.
+    taper_fraction : float, optional
+        Fraction of the kernel length to taper (default 0.1).
 
     Returns
     -------
-    t : ndarray
-        1D array of time points from 0 to t_max in steps of dt.
-    kernel : ndarray
-        Normalized gamma PDF values at each t (i.e. ∫ g(t) dt = 1).
+    t : np.ndarray
+        Time vector from 0 to t_max in steps of dt.
+    kernel : np.ndarray
+        Normalized, tapered, and shifted gamma PDF.
     """
     t = np.arange(0.0, t_max + dt, dt)
-    kernel = (t ** (k - 1)) * np.exp(-t / theta) / ((theta**k) * gamma(k))
-    kernel /= np.trapezoid(kernel, t)
 
-    kernel = taper_kernel(kernel)  # Apply tapering to reduce edge effects
+    # causal gamma PDF on t>0
+    kernel = np.zeros_like(t)
+    mask = t > 0
+    kernel[mask] = (t[mask]**(k - 1) * np.exp(-t[mask]/theta)) / (theta**k * gamma(k))
+
+    # taper before shift
+    kernel = taper_kernel(kernel, taper_fraction=taper_fraction)
+
+    # shift by `offset` (in years) via interpolation
+    kernel = shift_kernel(kernel, offset, dt)
+    # taper after shift
+    kernel = taper_kernel(kernel, taper_fraction=taper_fraction)
+
+    # final renormalization
+    kernel /= np.trapz(kernel, t)
+
     return t, kernel
 
 
-def fit_gamma_params(mode, fwhm, k0=6.5):
+def fit_gamma_params(mode, fwhm, skew, k0=6.5):
     """
-    Find gamma parameters k and theta so that the PDF has a given mode and FWHM.
+    Fit gamma parameters k, theta and compute offset so that the resulting
+    kernel has a specified FWHM and skew, then peaks at `mode`.
 
     Parameters
     ----------
     mode : float
-        Desired mode (peak location) of the gamma PDF in years.
+        Desired mode (peak location in years) after shifting.
     fwhm : float
         Desired full width at half maximum (years).
+    skew : float
+        Desired half‐width skew ratio:
+            skew = (mode0 - t1) / (t2 - mode0)
+        where t1, t2 are the half‐max points of the un‐shifted PDF.
     k0 : float, optional
-        Initial guess for the shape parameter k (default: 6.5).  A value
-        around 6.5 produces a mode ≈25 yr and FWHM ≈25 yr, typical for
-        WAIS Divide firn smoothing.
+        Initial guess for shape parameter k (default 6.5).
 
     Returns
     -------
     k_fit : float
-        Fitted shape parameter k (α).
+        Fitted shape parameter.
     theta_fit : float
-        Fitted scale parameter θ.
+        Fitted scale parameter.
+    offset : float
+        Time shift (years) to move the intrinsic mode to `mode`.
     """
+    def pdf(t, k, theta):
+        return (t**(k - 1) * np.exp(-t/theta)) / (theta**k * gamma(k))
 
     def equations(params):
         k, theta = params
-        # 1) mode constraint: (k-1)*θ = mode
-        eq1 = (k - 1) * theta - mode
-
-        # 2) FWHM constraint: solve PDF(t) = half‐peak at two points and enforce their difference = fwhm
-        t_mode = (k - 1) * theta
-
-        def pdf(t):
-            return (t ** (k - 1)) * np.exp(-t / theta) / ((theta**k) * gamma(k))
-
-        peak = pdf(t_mode)
+        # intrinsic mode of the un‐shifted gamma
+        mode0 = (k - 1) * theta
+        peak = pdf(mode0, k, theta)
         half = peak / 2
-        t1 = fsolve(lambda t: pdf(t) - half, t_mode * 0.5)[0]
-        t2 = fsolve(lambda t: pdf(t) - half, t_mode * 1.5)[0]
-        eq2 = (t2 - t1) - fwhm
 
+        # find half‐max points
+        t1 = fsolve(lambda τ: pdf(τ, k, theta) - half, mode0 * 0.5)[0]
+        t2 = fsolve(lambda τ: pdf(τ, k, theta) - half, mode0 * 1.5)[0]
+
+        # FWHM and skew equations
+        eq1 = (t2 - t1) - fwhm
+        eq2 = ((mode0 - t1) / (t2 - mode0)) - skew
         return [eq1, eq2]
 
-    k_fit, theta_fit = fsolve(equations, x0=[k0, mode / (k0 - 1)])
-    return k_fit, theta_fit
+    # initial guess (theta0 from mode0 = (k0-1)*theta0)
+    theta0 = mode / (k0 - 1)
+    k_fit, theta_fit = fsolve(equations, x0=[k0, theta0])
+
+    # compute offset = desired_mode - intrinsic_mode
+    mode0 = (k_fit - 1) * theta_fit
+    offset = mode - mode0
+
+    return k_fit, theta_fit, offset
 
 def log_logistic_kernel(alpha, beta, t_max=200, dt=1.0, offset=0.0, taper_fraction=0.1):
     """
@@ -123,11 +196,7 @@ def log_logistic_kernel(alpha, beta, t_max=200, dt=1.0, offset=0.0, taper_fracti
     kernel = taper_kernel(kernel, taper_fraction=taper_fraction)
 
     # shift the tapered kernel by 'offset' years
-    # compute fractional shift in index-space
-    shift_idx = offset / dt
-    idx = np.arange(len(kernel))
-    # use linear interpolation; anything falling off the ends → 0
-    kernel = np.interp(idx - shift_idx, idx, kernel, left=0.0, right=0.0)
+    kernel = shift_kernel(kernel, offset, dt)
 
     # final taper + renormalization
     kernel = taper_kernel(kernel, taper_fraction=taper_fraction)
@@ -255,24 +324,3 @@ def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
 
     # ---------- 3. trim to original length ---------------------------------
     return smoothed_full[:N]
-
-def taper_kernel(kernel, taper_fraction=0.1):
-    """
-    Apply a taper to the edges of the kernel to reduce edge effects.
-
-    Parameters
-    ----------
-    kernel : np.ndarray
-        The kernel to be tapered.
-    taper_fraction : float, optional
-        Fraction of the kernel length to apply the taper (default is 0.1).
-
-    Returns
-    -------
-    np.ndarray
-        Tapered kernel.
-    """
-    taper = tukey(len(kernel), alpha=taper_fraction)
-    kernel_tapered = kernel * taper
-    kernel_tapered /= np.trapezoid(kernel_tapered)  # normalize the tapered kernel
-    return kernel_tapered
