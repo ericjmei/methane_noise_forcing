@@ -9,9 +9,9 @@ noise:
 
 paths:
   project_root: "/Users/ericm/Documents/Research/methane_noise_forcing"
-  data_dir: "data"
-  configs_dir: "configs" 
-  figures_dir: "figures"
+  data_dir: "${paths.project_root}/data"
+  configs_dir: "${paths.project_root}/configs" 
+  figures_dir: "${paths.project_root}/figures"
   
   # Derived paths (relative to project_root)
   noise_realizations_root: "${paths.data_dir}/noise_realizations"
@@ -21,3 +21,17 @@ paths:
 
   observations_root: "${paths.data_dir}/observations"
   observations_cultivated: "${paths.observations_root}/cultivated"
+
+io:
+  wdc05a:
+    file_path: "${paths.observations_cultivated}/mitchelletal2013_wdc05a.csv"
+    mask_year: 1800
+  wdc06a:
+    file_path: "${paths.observations_cultivated}/mitchelletal2013_wdc06a.csv"
+    mask_year: 1800
+  gisp2:
+    file_path: "${paths.observations_cultivated}/mitchelletal2013_gisp2.csv"
+    mask_year: 1800
+  neem:
+    file_path: "${paths.observations_cultivated}/rhodesandbrook2019.tab"
+    mask_year: 1800

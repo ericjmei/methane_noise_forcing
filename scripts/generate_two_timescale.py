@@ -17,8 +17,7 @@ def generate_two_timescale(cfg: DictConfig):
         cfg (DictConfig): Configuration object containing parameters for noise generation.
     """
     # Resolve paths
-    project_root = Path(cfg.paths.project_root)
-    output_dir = project_root / cfg.paths.noise_realizations_raw
+    output_dir = Path(cfg.paths.noise_realizations_raw)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate noise data
