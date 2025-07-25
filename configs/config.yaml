@@ -18,3 +18,6 @@ paths:
   noise_realizations_raw: "${paths.noise_realizations_root}/raw"
   noise_realizations_smoothed: "${paths.noise_realizations_root}/smoothed"
   noise_realizations_sampled: "${paths.noise_realizations_root}/sampled"
+
+  observations_root: "${paths.data_dir}/observations"
+  observations_cultivated: "${paths.observations_root}/cultivated"
