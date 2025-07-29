@@ -9,8 +9,8 @@ from .two_timescale_ar1 import (
 )
 from .white_noise_ar1 import (
     WhiteNoiseAR1Params,
-    compute_ar1_params_from_tau,
-    generate_ar1_noise,
+    calculate_white_noise_ar1_params,
+    simulate_white_noise_ar1,
 )
 
 __all__ = [
@@ -18,6 +18,6 @@ __all__ = [
     "calculate_two_timescale_ar1_params",
     "simulate_two_timescale_ar1",
     "WhiteNoiseAR1Params",
-    "compute_ar1_params_from_tau",
-    "generate_ar1_noise",
+    "calculate_white_noise_ar1_params",
+    "simulate_white_noise_ar1",
 ]

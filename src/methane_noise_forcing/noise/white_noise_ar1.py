@@ -19,7 +19,7 @@ class WhiteNoiseAR1Params:
     sigma_cont: float  # Continuous-time diffusion coefficient
 
 
-def compute_ar1_params_from_tau(
+def calculate_white_noise_ar1_params(
     tau_days: float, dt_days: float, variance: float
 ) -> WhiteNoiseAR1Params:
     """
@@ -57,7 +57,7 @@ def compute_ar1_params_from_tau(
     return WhiteNoiseAR1Params(phi=phi, sigma_cont=sigma_cont, sigma_eps=sigma_eps)
 
 
-def generate_ar1_noise(
+def simulate_white_noise_ar1(
     phi: float,
     sigma_eps: float,
     n_steps: int,
