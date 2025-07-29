@@ -87,3 +87,32 @@ def load_rhodesandbrook2019(file_path: Path, mask_year: float) -> pd.DataFrame:
     df = df[["gas_age", "ch4"]].copy()
     df = _mask_data_after_year(df, mask_year)  # mask data after 1800
     return df
+
+def load_observational_data(site_name: str, file_path: Path, mask_year: float) -> pd.DataFrame:
+    """
+    Load observational data for a specific site.
+
+    Parameters
+    ----------
+    site_name : str
+        Name of the site (e.g., "wdc05a").
+    file_path : Path
+        Path to the observational data CSV file.
+    mask_year : float
+        Year to mask the data. Data before this year will be excluded.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame containing the observational data for the specified site.
+    """
+    if site_name == "wdc05a":
+        return load_mitchell2013(file_path, mask_year)
+    elif site_name == "wdc06a":
+        return load_mitchell2013(file_path, mask_year)
+    elif site_name == "gisp2":
+        return load_mitchell2013(file_path, mask_year)
+    elif site_name == "neem":
+        return load_rhodesandbrook2019(file_path, mask_year)
+    else:
+        raise ValueError(f"Unknown site name: {site_name}")

@@ -2,6 +2,8 @@ defaults:
   - noise: two_timescale
   - _self_ # inherit global defaults
 
+sites: [wdc05a]
+
 defaults_for_observations: &defaults_for_observations
   mask_year: 1800
 
