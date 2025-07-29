@@ -5,7 +5,7 @@ import hydra
 from pathlib import Path
 import xarray as xr
 import numpy as np
-from methane_noise_forcing import simulate_two_timescale_ar1
+from methane_noise_forcing.noise import simulate_two_timescale_ar1
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -21,14 +21,14 @@ def generate_two_timescale(cfg: DictConfig):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate noise data
-    N = int(cfg.noise.duration_timeseries / cfg.noise.dt)
-    time = np.arange(N) * cfg.noise.dt
+    n_steps = int(cfg.noise.duration_timeseries / cfg.noise.dt)
+    time = np.arange(n_steps) * cfg.noise.dt
     ch4_ens, forcing_ens = simulate_two_timescale_ar1(
         tau_x=cfg.noise.tau_ch4,
         tau_eta=cfg.noise.tau_forcing,
         variance_x=cfg.noise.variance_ch4,
         dt=cfg.noise.dt,
-        N=N,
+        n_steps=n_steps,
         n_ens=cfg.noise.n_ens,
     )
 

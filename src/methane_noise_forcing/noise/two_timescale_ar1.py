@@ -1,92 +1,22 @@
-# src/methane_noise_forcing/utils.py
+# src/methane_noise_forcing/noise/two_timescale_ar1.py
 # -*- coding: utf-8 -*-
+"""Functionality for simulating a two-timescale AR(1) noise process.
+
+Two timescale process is defined by:
+    dx/dt = A x + B ξ, where x=[f, η]
+with timescales τₓ, τη, and Var[f]=variance_x in stationarity and discretized with step dt.
+This module provides functions to calculate the necessary parameters and simulate the process.
+"""
+
 from dataclasses import dataclass
 import numpy as np
 from scipy import linalg
 
 
-def generate_ar1_noise(
-    phi: float, sigma_eps: float, n_steps: int, rng: np.random.Generator = None
-) -> np.ndarray:
-    """
-    Core AR(1) noise generator.
-
-    Parameters
-    ----------
-    phi : float
-        AR(1) coefficient, must satisfy |phi|<1. For white noise use phi=0.
-    sigma_eps : float
-        Standard deviation of the innovation (noise) term. Assumes 0 power outside nyquist frequency.
-    n_steps : int
-        Length of time series to generate.
-    rng : np.random.Generator, optional
-        Random number generator for reproducibility. If None, a new default_rng() is used.
-
-    Returns
-    -------
-    x : ndarray of shape (n_steps,)
-        The AR(1) noise series.
-    """
-    # Use provided RNG or create a new one
-    if rng is None:
-        rng = np.random.default_rng()
-
-    x = np.empty(n_steps, float)
-    # compute initial variance for stationary distribution
-    if abs(phi) < 1:
-        var_init = sigma_eps**2 / (1 - phi**2)
-    else:
-        var_init = 0.0
-    x[0] = rng.normal(0.0, np.sqrt(var_init))
-    for i in range(1, n_steps):
-        x[i] = phi * x[i - 1] + rng.normal(0.0, sigma_eps)
-    return x
-
-
-def compute_ar1_params_from_tau(
-    tau_days: float, dt_days: float, variance: float
-) -> tuple[float, float, float]:
-    """
-    Compute AR(1) params from e‐folding timescale and stationary variance.
-
-    Parameters
-    ----------
-    tau_days : float
-        E‐folding autocorrelation timescale (days). If tau_days <= 0,
-        we treat it as pure white noise (phi=0).
-    dt_days : float
-        Time‐step resolution (days).
-    variance : float
-        Stationary variance of the process (Var[X]).
-
-    Returns
-    -------
-    phi : float
-        AR(1) coefficient.
-    sigma_cont : float
-        Continuous‐time diffusion coeff (state / sqrt(day)).
-    sigma_eps : float
-        Discrete‐time innovation std-dev (state units).
-    """
-    if tau_days > 0:
-        # AR(1) persistence
-        phi = np.exp(-dt_days / tau_days)
-        # continuous‐time diffusion coeff from Var[X] = sigma_cont^2 * tau / 2
-        sigma_cont = np.sqrt(2 * variance / tau_days)
-        # discrete innovation over dt
-        sigma_eps = sigma_cont * np.sqrt(dt_days)
-    else:
-        # white noise: no memory
-        phi = 0.0
-        # infer sigma_cont so that sigma_eps = sqrt(variance)
-        sigma_eps = np.sqrt(variance)
-        sigma_cont = sigma_eps / np.sqrt(dt_days)
-
-    return phi, sigma_cont, sigma_eps
-
-
 @dataclass
 class TwoTimescaleAR1Params:
+    """Container for two-timescale AR(1) parameters."""
+
     A: np.ndarray  # continuous‐time system matrix
     B: np.ndarray  # diffusion input matrix
     F: np.ndarray  # discrete‐time transition matrix expm(A*dt)
@@ -162,7 +92,7 @@ def calculate_two_timescale_ar1_params(
     return TwoTimescaleAR1Params(A, B, F, M, expM, Q0, L, sigma_f, sigma_eta)
 
 
-def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, N, n_ens, seed=42):
+def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, seed=42):
     """
     Simulate a two‐timescale AR(1) process with given parameters.
 
@@ -176,7 +106,7 @@ def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, N, n_ens, seed=42
         Target stationary variance of x.
     dt : float
         Discrete time step.
-    N : int
+    n_steps : int
         Length of the time series to simulate (time / dt).
     n_ens : int
         Number of ensemble members to simulate.
@@ -185,17 +115,17 @@ def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, N, n_ens, seed=42
 
     Returns
     -------
-    x_ens : ndarray of shape (n_ens, N)
+    x_ens : ndarray of shape (n_ens, n_steps)
         Simulated upstream component x for each ensemble member.
-    eta_ens : ndarray of shape (n_ens, N)
+    eta_ens : ndarray of shape (n_ens, n_steps)
         Simulated downstream component η for each ensemble member.
     """
     params = calculate_two_timescale_ar1_params(tau_x, tau_eta, variance_x, dt)
-    x_ens = np.zeros((n_ens, N))
-    eta_ens = np.zeros((n_ens, N))
+    x_ens = np.zeros((n_ens, n_steps))
+    eta_ens = np.zeros((n_ens, n_steps))
     for k in range(n_ens):
-        state = np.zeros((2, N))
-        for i in range(1, N):
+        state = np.zeros((2, n_steps))
+        for i in range(1, n_steps):
             state[:, i] = params.F @ state[:, i - 1] + params.L @ np.random.randn(2)
         x_ens[k] = state[0]
         eta_ens[k] = state[1]
