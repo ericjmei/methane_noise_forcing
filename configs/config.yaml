@@ -2,6 +2,9 @@ defaults:
   - noise: two_timescale
   - _self_ # inherit global defaults
 
+defaults_for_observations: &defaults_for_observations
+  mask_year: 1800
+
 noise:
   time_units: years
   output:
@@ -21,17 +24,26 @@ paths:
 
   observations_root: "${paths.data_dir}/observations"
   observations_cultivated: "${paths.observations_root}/cultivated"
+  observations_power_spectra: "${paths.observations_root}/power_spectra"
 
 io:
   wdc05a:
-    file_path: "${paths.observations_cultivated}/mitchelletal2013_wdc05a.csv"
-    mask_year: 1800
+    input:
+      file_path: "${paths.observations_cultivated}/mitchelletal2013_wdc05a.csv"
+      <<: *defaults_for_observations
+    power_spectra_path: "${paths.observations_power_spectra}/mitchelletal2013_wdc05a_power_spectra.nc"
   wdc06a:
-    file_path: "${paths.observations_cultivated}/mitchelletal2013_wdc06a.csv"
-    mask_year: 1800
+    input:
+      file_path: "${paths.observations_cultivated}/mitchelletal2013_wdc06a.csv"
+      <<: *defaults_for_observations
+    power_spectra_path: "${paths.observations_power_spectra}/mitchelletal2013_wdc06a_power_spectra.nc"
   gisp2:
-    file_path: "${paths.observations_cultivated}/mitchelletal2013_gisp2.csv"
-    mask_year: 1800
+    input:
+      file_path: "${paths.observations_cultivated}/mitchelletal2013_gisp2.csv"
+      <<: *defaults_for_observations
+    power_spectra_path: "${paths.observations_power_spectra}/mitchelletal2013_gisp2_power_spectra.nc"
   neem:
-    file_path: "${paths.observations_cultivated}/rhodesandbrook2019.tab"
-    mask_year: 1800
+    input:
+      file_path: "${paths.observations_cultivated}/rhodesandbrook2019_neem.tab"
+      <<: *defaults_for_observations
+    power_spectra_path: "${paths.observations_power_spectra}/rhodesandbrook2019_neem_power_spectra.nc"
