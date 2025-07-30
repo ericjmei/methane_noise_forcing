@@ -6,6 +6,11 @@ from pathlib import Path
 import xarray as xr
 import numpy as np
 from methane_noise_forcing.noise import simulate_two_timescale_ar1
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -16,13 +21,23 @@ def generate_two_timescale(cfg: DictConfig):
     Args:
         cfg (DictConfig): Configuration object containing parameters for noise generation.
     """
+    logger.info("Starting two-timescale AR(1) noise generation")
+    logger.info(f"Configuration: tau_ch4={cfg.noise.tau_ch4}, tau_forcing={cfg.noise.tau_forcing}, "
+                f"variance_ch4={cfg.noise.variance_ch4}, duration={cfg.noise.duration_timeseries}yr, "
+                f"n_ens={cfg.noise.n_ens}")
+    
     # Resolve paths
     output_dir = Path(cfg.paths.noise_realizations_raw)
     output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Output directory: {output_dir}")
 
     # Generate noise data
     n_steps = int(cfg.noise.duration_timeseries / cfg.noise.dt)
+    logger.info(f"Generating {n_steps} time steps with dt={cfg.noise.dt}")
+    
     time = np.arange(n_steps) * cfg.noise.dt
+    logger.info("Simulating two-timescale AR(1) process...")
+    
     ch4_ens, forcing_ens = simulate_two_timescale_ar1(
         tau_x=cfg.noise.tau_ch4,
         tau_eta=cfg.noise.tau_forcing,
@@ -31,8 +46,10 @@ def generate_two_timescale(cfg: DictConfig):
         n_steps=n_steps,
         n_ens=cfg.noise.n_ens,
     )
+    logger.info(f"Generated ensemble arrays with shape: {ch4_ens.shape}")
 
     # Create xarray Dataset
+    logger.info("Creating xarray Dataset...")
     ds = xr.Dataset(
         {
             "ch4_ens": (["ensemble", "time"], ch4_ens),
@@ -56,24 +73,42 @@ def generate_two_timescale(cfg: DictConfig):
     # Save the dataset
     filename = _generate_filename(cfg)
     output_path = output_dir / filename
-    if cfg.noise.output.format == "netcdf":
-        ds.to_netcdf(output_path, mode="w")
-    elif cfg.noise.output.format == "hdf5":
-        ds.to_hdf5(output_path, mode="w")
+    logger.info(f"Saving dataset to: {output_path}")
+    
+    try:
+        if cfg.noise.output.format == "netcdf":
+            ds.to_netcdf(output_path, mode="w")
+        elif cfg.noise.output.format == "hdf5":
+            ds.to_hdf5(output_path, mode="w")
+        else:
+            logger.error(f"Unsupported output format: {cfg.noise.output.format}")
+            raise ValueError(f"Unsupported output format: {cfg.noise.output.format}")
+        
+        logger.info(f"Successfully saved dataset with {cfg.noise.output.format} format")
+        logger.info(f"File size: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
+        
+    except Exception as e:
+        logger.error(f"Failed to save dataset: {e}")
+        raise
+    
+    logger.info("Two-timescale AR(1) noise generation completed successfully")
 
 
 def _generate_filename(cfg: DictConfig) -> str:
     """Generate descriptive filename from config parameters."""
     ext = "nc" if cfg.noise.output.format == "netcdf" else "h5"
 
-    return (
+    filename = (
         f"two_timescale_ar1_"
-        f"tau{cfg.noise.tau_ch4}_"
-        f"tau{cfg.noise.tau_forcing}_"
-        f"var{cfg.noise.variance_ch4}_"
+        f"tau-ch4-{cfg.noise.tau_ch4}_"
+        f"tau-forcing-{cfg.noise.tau_forcing}_"
+        f"var-ch4-{cfg.noise.variance_ch4}_"
         f"{cfg.noise.duration_timeseries}yr_"
-        f"{cfg.noise.n_ens}.{ext}"
+        f"{cfg.noise.n_ens}ens.{ext}"
     )
+    
+    logger.debug(f"Generated filename: {filename}")
+    return filename
 
 
 if __name__ == "__main__":
