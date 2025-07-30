@@ -6,6 +6,7 @@ from pathlib import Path
 import xarray as xr
 import numpy as np
 from methane_noise_forcing.noise import simulate_two_timescale_ar1
+from methane_noise_forcing.naming import generate_noise_realization_name
 import logging
 
 
@@ -27,7 +28,8 @@ def generate_two_timescale(cfg: DictConfig):
                 f"n_ens={cfg.noise.n_ens}")
     
     # Resolve paths
-    output_dir = Path(cfg.paths.noise_realizations_raw)
+    noise_name = generate_noise_realization_name(cfg)
+    output_dir = Path(cfg.paths.noise_realizations_root) / noise_name
     output_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"Output directory: {output_dir}")
 
@@ -71,7 +73,8 @@ def generate_two_timescale(cfg: DictConfig):
     )
 
     # Save the dataset
-    filename = _generate_filename(cfg)
+    ext = "nc" if cfg.noise.output.format == "netcdf" else "h5"
+    filename = noise_name + f".{ext}"
     output_path = output_dir / filename
     logger.info(f"Saving dataset to: {output_path}")
     
@@ -92,23 +95,6 @@ def generate_two_timescale(cfg: DictConfig):
         raise
     
     logger.info("Two-timescale AR(1) noise generation completed successfully")
-
-
-def _generate_filename(cfg: DictConfig) -> str:
-    """Generate descriptive filename from config parameters."""
-    ext = "nc" if cfg.noise.output.format == "netcdf" else "h5"
-
-    filename = (
-        f"two_timescale_ar1_"
-        f"tau-ch4-{cfg.noise.tau_ch4}_"
-        f"tau-forcing-{cfg.noise.tau_forcing}_"
-        f"var-ch4-{cfg.noise.variance_ch4}_"
-        f"{cfg.noise.duration_timeseries}yr_"
-        f"{cfg.noise.n_ens}ens.{ext}"
-    )
-    
-    logger.debug(f"Generated filename: {filename}")
-    return filename
 
 
 if __name__ == "__main__":

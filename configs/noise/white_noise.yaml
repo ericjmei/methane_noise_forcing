@@ -1,6 +1,5 @@
-type: two_timescale_ar1
+type: white_noise_ar1
 tau_ch4: 10     # Time constant for methane lifetime
-tau_forcing: 1 # Time constant for forcing
 variance_ch4: 225 # Variance for methane, ppb^2
 duration_timeseries: 1000 # Duration of time series in years
 dt: 1 # Time step in years
