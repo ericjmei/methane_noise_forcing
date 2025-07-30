@@ -82,7 +82,7 @@ def gamma_kernel(k, theta, t_max=200, dt=1.0, offset=0.0, taper_fraction=0.1):
     t = np.arange(0.0, t_max + dt, dt)
 
     # causal gamma PDF on t>0
-    kernel = np.zeros_like(t)
+    kernel = np.zeros_like(t, dtype=float)
     mask = t > 0
     kernel[mask] = (t[mask] ** (k - 1) * np.exp(-t[mask] / theta)) / (
         theta**k * gamma(k)
@@ -190,7 +190,7 @@ def log_logistic_kernel(alpha, beta, t_max=200, dt=1.0, offset=0.0, taper_fracti
     t = np.arange(0, t_max + dt, dt)  # time axis
 
     # un-shifted log-logistic PDF (causal: zero before t=0)
-    kernel = np.zeros_like(t)
+    kernel = np.zeros_like(t, dtype=float)
     positive = t > 0
     kernel[positive] = (
         (beta / alpha)
