@@ -92,7 +92,7 @@ def calculate_two_timescale_ar1_params(
     return TwoTimescaleAR1Params(A, B, F, M, expM, Q0, L, sigma_f, sigma_eta)
 
 
-def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, seed=42):
+def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, rng: np.random.Generator = None):
     """
     Simulate a two‐timescale AR(1) process with given parameters.
 
@@ -110,8 +110,8 @@ def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, s
         Length of the time series to simulate (time / dt).
     n_ens : int
         Number of ensemble members to simulate.
-    seed : int, optional
-        Random seed for reproducibility (default: 42).
+    rng : np.random.Generator, optional
+        Random number generator for reproducibility (default: None).
 
     Returns
     -------
@@ -120,13 +120,19 @@ def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, s
     eta_ens : ndarray of shape (n_ens, n_steps)
         Simulated downstream component η for each ensemble member.
     """
+    # Use provided RNG or create a new one
+    if rng is None:
+        rng = np.random.default_rng()
+
     params = calculate_two_timescale_ar1_params(tau_x, tau_eta, variance_x, dt)
     x_ens = np.zeros((n_ens, n_steps))
     eta_ens = np.zeros((n_ens, n_steps))
+    innovations = rng.standard_normal(size=(n_ens, n_steps, 2))
+
     for k in range(n_ens):
         state = np.zeros((2, n_steps))
         for i in range(1, n_steps):
-            state[:, i] = params.F @ state[:, i - 1] + params.L @ np.random.randn(2)
+            state[:, i] = params.F @ state[:, i - 1] + params.L @ innovations[k, i]
         x_ens[k] = state[0]
         eta_ens[k] = state[1]
     return x_ens, eta_ens
