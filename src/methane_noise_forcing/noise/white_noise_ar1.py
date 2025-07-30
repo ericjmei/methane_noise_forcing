@@ -20,18 +20,18 @@ class WhiteNoiseAR1Params:
 
 
 def calculate_white_noise_ar1_params(
-    tau_days: float, dt_days: float, variance: float
+    tau_years: float, dt_years: float, variance: float
 ) -> WhiteNoiseAR1Params:
     """
     Compute AR(1) params from e‐folding timescale and stationary variance.
 
     Parameters
     ----------
-    tau_days : float
-        E‐folding autocorrelation timescale (days). If tau_days <= 0,
+    tau_years : float
+        E‐folding autocorrelation timescale (years). If tau_years <= 0,
         we treat it as pure white noise (phi=0).
-    dt_days : float
-        Time‐step resolution (days).
+    dt_years : float
+        Time‐step resolution (years).
     variance : float
         Stationary variance of the process (Var[X]).
 
@@ -40,19 +40,19 @@ def calculate_white_noise_ar1_params(
     WhiteNoiseAR1Params
         Container with phi, sigma_eps, sigma_cont.
     """
-    if tau_days > 0:
+    if tau_years > 0:
         # AR(1) persistence
-        phi = np.exp(-dt_days / tau_days)
+        phi = np.exp(-dt_years / tau_years)
         # continuous‐time diffusion coeff from Var[X] = sigma_cont^2 * tau / 2
-        sigma_cont = np.sqrt(2 * variance / tau_days)
+        sigma_cont = np.sqrt(2 * variance / tau_years)
         # discrete innovation over dt
-        sigma_eps = sigma_cont * np.sqrt(dt_days)
+        sigma_eps = sigma_cont * np.sqrt(dt_years)
     else:
         # white noise: no memory
         phi = 0.0
         # infer sigma_cont so that sigma_eps = sqrt(variance)
         sigma_eps = np.sqrt(variance)
-        sigma_cont = sigma_eps / np.sqrt(dt_days)
+        sigma_cont = sigma_eps / np.sqrt(dt_years)
 
     return WhiteNoiseAR1Params(phi=phi, sigma_cont=sigma_cont, sigma_eps=sigma_eps)
 
