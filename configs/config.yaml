@@ -1,5 +1,5 @@
 defaults:
-  - noise: two_timescale
+  - noise: two_timescale_ar1_1
   - _self_ # inherit global defaults
 
 sites: [wdc05a]
@@ -8,6 +8,9 @@ defaults_for_observations: &defaults_for_observations
   mask_year: 1800
 
 noise:
+  duration_timeseries: 1200 # Duration of time series in years
+  n_ens: 1000 # Number of ensemble members
+  dt: 1 # Time step in years
   time_units: years
   output:
     format: netcdf
