@@ -176,6 +176,15 @@ class FirnFilter:
             alpha, beta, t_max=t_max, dt=dt, offset=offset, **kwargs
         )
         return cls(g, dt)
+    
+    @classmethod
+    def fit_from_config(cls, kernel_type: str, parameters: dict, **kwargs):
+        if kernel_type == "log_logistic":
+            return cls.fit_log_logistic(**parameters, **kwargs)
+        elif kernel_type == "gamma":
+            return cls.fit_gamma(**parameters, **kwargs)
+        else:
+            raise ValueError(f"Unknown kernel type: {kernel_type}")
 
     def apply(self, series: np.ndarray, dt_series=1.0) -> np.ndarray:
         """

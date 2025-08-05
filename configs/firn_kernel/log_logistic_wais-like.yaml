@@ -1,0 +1,9 @@
+type: log_logistic
+name: wais
+parameters:
+  mode: 40 # years
+  fwhm: 26 # years
+  skew: 0.65 # skewness
+  t_max: 200 # years
+  dt: 1 # years
+notes: Configuration based on fitting the WAIS closed-air porosity from Mitchell et al. (2015)

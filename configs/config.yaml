@@ -1,5 +1,6 @@
 defaults:
   - noise: two_timescale_ar1_1
+  - firn_kernel: log_logistic_wais-like
   - _self_ # inherit global defaults
 
 sites: [wdc05a]

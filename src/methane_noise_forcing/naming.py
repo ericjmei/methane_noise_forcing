@@ -69,3 +69,27 @@ def generate_two_timescale_ar1_name(cfg) -> str:
     )
 
     return name
+
+def generate_firn_smoothing_name(cfg) -> str:
+    """
+    Generate a file or directory name for firn smoothing.
+
+    Parameters
+    ----------
+    cfg : Config
+        Configuration object containing firn smoothing parameters.
+
+    Returns
+    -------
+    str
+        Formatted file name for the firn smoothing.
+    """
+    name = (
+        f"firn_"
+        f"kernel-{cfg.firn_kernel.type}_"
+        f"name-{cfg.firn_kernel.name}_"
+        f"mode-{cfg.firn_kernel.parameters.mode}_"
+        f"fwhm-{cfg.firn_kernel.parameters.fwhm}"
+    )
+
+    return name
