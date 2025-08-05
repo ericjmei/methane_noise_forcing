@@ -54,8 +54,8 @@ def generate_two_timescale(cfg: DictConfig):
     logger.info("Creating xarray Dataset...")
     ds = xr.Dataset(
         {
-            "ch4_ens": (["ensemble", "time"], ch4_ens),
-            "forcing_ens": (["ensemble", "time"], forcing_ens),
+            "ch4": (["ensemble", "time"], ch4_ens),
+            "forcing": (["ensemble", "time"], forcing_ens),
         },
         coords={
             "ensemble": np.arange(cfg.noise.n_ens),
