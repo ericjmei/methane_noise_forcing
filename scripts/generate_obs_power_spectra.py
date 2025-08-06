@@ -134,5 +134,6 @@ def _calculate_power_spectrum(gas_age: np.ndarray, ch4: np.ndarray):
     )
     return frequencies, power_spectrum
 
+
 if __name__ == "__main__":
     generate_obs_power_spectra()
