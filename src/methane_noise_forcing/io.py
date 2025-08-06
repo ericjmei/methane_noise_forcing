@@ -4,6 +4,10 @@
 import numpy as np
 import pandas as pd
 from pathlib import Path
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def _mask_data_after_year(df: pd.DataFrame, year: float) -> pd.DataFrame:
@@ -107,12 +111,16 @@ def load_observational_data(site_name: str, file_path: Path, mask_year: float) -
         DataFrame containing the observational data for the specified site.
     """
     if site_name == "wdc05a":
+        logger.info(f"Loading WDC05A data from {file_path}")
         return load_mitchell2013(file_path, mask_year)
     elif site_name == "wdc06a":
+        logger.info(f"Loading WDC06A data from {file_path}")
         return load_mitchell2013(file_path, mask_year)
     elif site_name == "gisp2":
+        logger.info(f"Loading GISP2 data from {file_path}")
         return load_mitchell2013(file_path, mask_year)
     elif site_name == "neem":
+        logger.info(f"Loading NEEM data from {file_path}")
         return load_rhodesandbrook2019(file_path, mask_year)
     else:
         raise ValueError(f"Unknown site name: {site_name}")

@@ -1,4 +1,4 @@
-from .sampler import sample_series_at_core_points
+from .sampler import sample_series_at_core_points, sample_ensemble_series
 from .filters import (
     gamma_kernel,
     fit_gamma_params,
@@ -10,6 +10,7 @@ from .firnFilter import FirnFilter
 
 __all__ = [
     "sample_series_at_core_points",
+    "sample_ensemble_series",
     "gamma_kernel",
     "fit_gamma_params",
     "log_logistic_kernel",

@@ -14,6 +14,10 @@ noise:
   output:
     format: netcdf
 
+sampling:
+  core_offset_flag: start # Offset for sampling at core points
+  series_offset: 150 # Offset in years for sampling for spinup
+
 paths:
   project_root: "/Users/ericm/Documents/Research/methane_noise_forcing"
   data_dir: "${paths.project_root}/data"

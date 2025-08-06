@@ -93,3 +93,26 @@ def generate_firn_smoothing_name(cfg) -> str:
     )
 
     return name
+
+def generate_sample_name(cfg) -> str:
+    """
+    Generate a file or directory name for sampled noise realizations.
+
+    Parameters
+    ----------
+    cfg : Config
+        Configuration object containing sampling parameters.
+
+    Returns
+    -------
+    str
+        Formatted file name for the sampled noise realizations.
+    """
+    name = (
+        f"sampled_"
+        f"site-{cfg.sampling.site}_"
+        f"core-offset-{cfg.sampling.core_offset_flag}_"
+        f"series-offset-{cfg.sampling.series_offset}"
+    )
+
+    return name
