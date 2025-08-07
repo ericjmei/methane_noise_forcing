@@ -77,5 +77,6 @@ def sample_noise(cfg: DictConfig):
         f"Sampled noise saved to {output_dir / f'sampled_smoothed_{noise_name}.nc'}"
     )
 
+
 if __name__ == "__main__":
     sample_noise()

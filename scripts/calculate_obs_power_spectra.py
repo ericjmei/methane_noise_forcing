@@ -8,6 +8,10 @@ import xarray as xr
 from pathlib import Path
 from astropy.timeseries import LombScargle
 from methane_noise_forcing.io import load_observational_data
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s")
+logger = logging.getLogger(__name__)
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -20,6 +24,7 @@ def generate_obs_power_spectra(cfg: DictConfig):
     cfg : DictConfig
         Configuration object containing parameters for power spectrum generation.
     """
+    logger.info("Starting power spectrum generation for observational data")
     # extract the site from the configuration
     assert len(cfg.sites) == 1, (
         "Only one site should be specified in the configuration."
@@ -34,6 +39,7 @@ def generate_obs_power_spectra(cfg: DictConfig):
     obs_data = load_observational_data(site, **cfg.io[site].input)
 
     # Calculate power spectra with original data (raw)
+    logger.info("Calculating power spectrum for raw data")
     frequencies, power_spectrum_raw_unnormalized = _calculate_power_spectrum(
         obs_data["gas_age"], obs_data["ch4"]
     )
@@ -47,6 +53,7 @@ def generate_obs_power_spectra(cfg: DictConfig):
         obs_data_detrended["gas_age"], obs_data_detrended["ch4"], 1
     )
     obs_data_detrended["ch4"] -= slope * obs_data_detrended["gas_age"] + intercept
+    logger.info("Calculating power spectrum for detrended data")
     _, power_spectrum_detrended_unnormalized = _calculate_power_spectrum(
         obs_data_detrended["gas_age"], obs_data_detrended["ch4"]
     )
@@ -89,6 +96,7 @@ def generate_obs_power_spectra(cfg: DictConfig):
     # Save the dataset
     output_path = Path(cfg.io[site].power_spectra_path)
     ds.to_netcdf(output_path, mode="w")
+    logger.info(f"Power spectra saved to {output_path}")
 
 
 def _calculate_normalized_power_spectrum(gas_age: np.ndarray, ch4: np.ndarray):
