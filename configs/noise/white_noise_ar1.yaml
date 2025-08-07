@@ -1,3 +1,3 @@
 type: white_noise_ar1
 tau_ch4: 10     # Time constant for methane lifetime
-variance_ch4: 113 # Variance for methane, ppb^2
+variance_ch4: 300 # Variance for methane, ppb^2
