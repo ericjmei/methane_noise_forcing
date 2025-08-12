@@ -31,6 +31,8 @@ paths:
   observations_cultivated: "${paths.observations_root}/cultivated"
   observations_power_spectra: "${paths.observations_root}/power_spectra"
 
+  firn_filters_root: "${paths.data_dir}/firn_filters"
+
 io:
   wdc05a:
     input:
