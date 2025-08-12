@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import pandas as pd
 from .filters import (
     gamma_kernel,
     fit_gamma_params,
@@ -17,6 +18,7 @@ class FirnFilter:
         kernel: array of G(τ) values at τ = 0, dt, 2dt, ...
         dt: time-step of the kernel
         """
+        
         self.kernel = kernel
         self.dt = dt
 
@@ -176,13 +178,60 @@ class FirnFilter:
             alpha, beta, t_max=t_max, dt=dt, offset=offset, **kwargs
         )
         return cls(g, dt)
-    
+
+    @classmethod
+    def from_firn_model(cls, path: str, **kwargs):
+        """
+        Load a FirnFilter from a file containing kernel parameters.
+
+        Parameters
+        ----------
+        path : str
+            Path to the file containing kernel parameters.
+        **kwargs : dict, optional
+            Additional keyword arguments for the kernel fitting.
+
+        Returns
+        -------
+        FirnFilter
+            An instance of FirnFilter loaded from the specified path.
+        """
+        # load the kernel from the file
+        df = pd.read_csv(path)
+
+        # extract dt, ensure it is constant
+        assert "time" in df.columns, "Column 'time' not found in the file."
+        time = df["time"].values
+        dt = np.mean(np.diff(time))
+        assert np.allclose(np.diff(time), dt), "Time intervals are not constant."
+        kernel = df.drop(columns=["time"]).values.flatten()
+        return cls(kernel, dt)
+
     @classmethod
     def fit_from_config(cls, kernel_type: str, parameters: dict, **kwargs):
+        """
+        Create a FirnFilter instance based on the kernel type and parameters.
+
+        Parameters
+        ----------
+        kernel_type : str
+            Type of the kernel to create (e.g., "log_logistic", "gamma", "firn_model").
+        parameters : dict
+            Parameters required for the specified kernel type.
+        **kwargs : dict, optional
+            Additional keyword arguments for the kernel fitting.
+
+        Returns
+        -------
+        FirnFilter
+            An instance of FirnFilter created based on the specified kernel type and parameters.
+        """
         if kernel_type == "log_logistic":
             return cls.fit_log_logistic(**parameters, **kwargs)
         elif kernel_type == "gamma":
             return cls.fit_gamma(**parameters, **kwargs)
+        elif kernel_type == "firn_model":
+            return cls.fit_from_firn_model(**parameters, **kwargs)
         else:
             raise ValueError(f"Unknown kernel type: {kernel_type}")
 

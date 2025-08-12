@@ -62,6 +62,7 @@ def sample_series_at_core_points(
 
     return sampled_values
 
+
 def sample_ensemble_series(
     da: xr.DataArray,
     core_time: np.ndarray,
@@ -88,7 +89,7 @@ def sample_ensemble_series(
         Sampled data with dims ("ensemble","time") and time coords=
         adjusted core_time. The time‐coordinate attrs store the offsets.
     """
-    series_time = da['time'].values
+    series_time = da["time"].values
 
     # compute core_offset exactly as in sample_series_at_core_points
     core_offset = _compute_core_offset(core_time, core_offset_flag)
@@ -96,7 +97,7 @@ def sample_ensemble_series(
 
     # sample each ensemble member
     sampled_list = []
-    for member in da['ensemble'].values:
+    for member in da["ensemble"].values:
         vals = da.sel(ensemble=member).values
         sampled = sample_series_at_core_points(
             series_time,
@@ -111,18 +112,17 @@ def sample_ensemble_series(
     # build output DataArray
     out = xr.DataArray(
         sampled_arr,
-        dims=('ensemble','time'),
-        coords={'ensemble': da['ensemble'], 'time': core_time},
+        dims=("ensemble", "time"),
+        coords={"ensemble": da["ensemble"], "time": core_time},
     )
     # store offsets needed to convert back to core_time
-    out['time'].attrs['core_offset'] = float(core_offset)
-    out['time'].attrs['series_offset'] = float(series_offset)
+    out["time"].attrs["core_offset"] = float(core_offset)
+    out["time"].attrs["series_offset"] = float(series_offset)
 
     return out
 
-def _compute_core_offset(
-    core_time: np.ndarray, core_offset_flag: str = None
-) -> float:
+
+def _compute_core_offset(core_time: np.ndarray, core_offset_flag: str = None) -> float:
     """
     Compute the core offset based on the core time and offset flag.
 
