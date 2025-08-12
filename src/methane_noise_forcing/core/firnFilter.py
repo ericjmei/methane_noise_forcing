@@ -18,7 +18,7 @@ class FirnFilter:
         kernel: array of G(τ) values at τ = 0, dt, 2dt, ...
         dt: time-step of the kernel
         """
-        
+
         self.kernel = kernel
         self.dt = dt
 
@@ -231,7 +231,7 @@ class FirnFilter:
         elif kernel_type == "gamma":
             return cls.fit_gamma(**parameters, **kwargs)
         elif kernel_type == "firn_model":
-            return cls.fit_from_firn_model(**parameters, **kwargs)
+            return cls.from_firn_model(**parameters, **kwargs)
         else:
             raise ValueError(f"Unknown kernel type: {kernel_type}")
 

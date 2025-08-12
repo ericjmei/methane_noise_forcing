@@ -7,4 +7,4 @@ parameters:
   t_max: 200 # years
   dt: 0.5 # years
   taper_fraction: 0 # fraction of the kernel to taper
-notes: Configuration based on fitting the WAIS closed-air porosity from Christo Buizert (notebook: explore_empirical_firn_filters.ipynb)
+notes: Configuration based on fitting the WAIS closed-air porosity from Christo Buizert (notebook - explore_empirical_firn_filters.ipynb)

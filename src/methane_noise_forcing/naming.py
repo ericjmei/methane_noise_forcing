@@ -84,13 +84,20 @@ def generate_firn_smoothing_name(cfg) -> str:
     str
         Formatted file name for the firn smoothing.
     """
-    name = (
-        f"firn_"
-        f"kernel-{cfg.firn_kernel.type}_"
-        f"name-{cfg.firn_kernel.name}_"
-        f"mode-{cfg.firn_kernel.parameters.mode}_"
-        f"fwhm-{cfg.firn_kernel.parameters.fwhm}"
-    )
+    if cfg.firn_kernel.type == "firn_model":
+        name = (
+            f"firn_"
+            f"kernel-{cfg.firn_kernel.type}_"
+            f"name-{cfg.firn_kernel.name}"
+        )
+    else:
+        name = (
+            f"firn_"
+            f"kernel-{cfg.firn_kernel.type}_"
+            f"name-{cfg.firn_kernel.name}_"
+            f"mode-{cfg.firn_kernel.parameters.mode}_"
+            f"fwhm-{cfg.firn_kernel.parameters.fwhm}"
+        )
 
     return name
 
