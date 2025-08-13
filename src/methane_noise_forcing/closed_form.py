@@ -4,7 +4,7 @@
 
 import numpy as np
 
-def calculate_kernel_self_lag(kernel: np.ndarray, dt: float, lags: int) -> np.ndarray:
+def calculate_kernel_self_lag(kernel: np.ndarray, lags: int) -> np.ndarray:
     """
     Calculate the self-lag of a kernel. If kernel is normalized, this is the autocorrelation function.
 
@@ -21,15 +21,14 @@ def calculate_kernel_self_lag(kernel: np.ndarray, dt: float, lags: int) -> np.nd
         Self-lag values for the specified lags.
     """
     assert np.sum(kernel) == 1, "Kernel must be normalized to sum to 1."
+    assert np.all(np.isclose(lags, np.round(lags))), "Lags must be integers."
     c_taus = np.zeros_like(lags, dtype=float)
-    for i, tau in enumerate(lags):
-        # calculate self-overlap at lag tau
-        shift_idx = int(tau / dt) # index shift
-        if shift_idx == 0:
+    for i, lag in enumerate(lags):
+        if lag == 0:
             # Special case for lag=0: sum of squares
             c_tau = np.sum(kernel ** 2)
         else:
-            c_tau = np.sum(kernel[:-shift_idx] * kernel[shift_idx:])
+            c_tau = np.sum(kernel[:-int(lag)] * kernel[int(lag):])
         c_taus[i] = c_tau
 
     return c_taus
