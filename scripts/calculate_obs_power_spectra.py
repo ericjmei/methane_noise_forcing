@@ -48,11 +48,14 @@ def generate_obs_power_spectra(cfg: DictConfig):
     )
 
     # Calculate power spectra with detrended data
+    if site == "wdc06a":
+        order = 2
+    else:
+        order = 1
+    logger.info(f"Detrending data with polynomial of order {order}")
     obs_data_detrended = obs_data.copy()
-    slope, intercept = np.polyfit(
-        obs_data_detrended["gas_age"], obs_data_detrended["ch4"], 1
-    )
-    obs_data_detrended["ch4"] -= slope * obs_data_detrended["gas_age"] + intercept
+    coeffs = np.polyfit(obs_data_detrended["gas_age"], obs_data_detrended["ch4"], order)
+    obs_data_detrended["ch4"] -= np.polyval(coeffs, obs_data_detrended["gas_age"])
     logger.info("Calculating power spectrum for detrended data")
     _, power_spectrum_detrended_unnormalized = _calculate_power_spectrum(
         obs_data_detrended["gas_age"], obs_data_detrended["ch4"]
@@ -92,6 +95,7 @@ def generate_obs_power_spectra(cfg: DictConfig):
     ds.attrs["mask_year"] = cfg.io[site].input.mask_year
     ds.attrs["gas_age_units"] = "years"
     ds.attrs["ch4_units"] = "ppb"
+    ds.attrs["detrending_polynomial_order"] = order
 
     # Save the dataset
     output_path = Path(cfg.io[site].power_spectra_path)
