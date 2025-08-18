@@ -25,7 +25,7 @@ Thumbs.db
 
 # figures and data
 figures/
-data/
+data/noise_realizations/
 
 # Output files
 outputs/
