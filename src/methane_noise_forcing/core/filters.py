@@ -315,9 +315,9 @@ def firn_convolve(series, kernel_t, kernel_g, dt_series=1.0):
     t_uniform = np.arange(n_kernel_series) * dt_series
     kernel_uniform = np.interp(t_uniform, kernel_t, kernel_g, left=0.0, right=0.0)
 
-    # ensure causal ordering and unit area (mass conservation)
-    kernel_uniform = np.maximum(kernel_uniform, 0.0)
-    kernel_uniform /= kernel_uniform.sum()  # normalise
+    # ensure causal ordering and unit area on series time grid (mass conservation)
+    kernel_uniform = np.maximum(kernel_uniform, 0.0) * dt_series
+    kernel_uniform /= kernel_uniform.sum()  # normalise by area
 
     # FFT-based linear convolution
     N = len(series)
