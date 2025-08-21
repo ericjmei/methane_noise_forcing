@@ -1,5 +1,5 @@
 type: firn_model
 name: gisp2
 parameters:
-  path: /Users/ericm/Documents/Research/methane_noise_forcing/data/firn_filters/firn_filter_gisp2.csv
+  file_name: firn_filter_gisp2.csv
 notes: GISP2 closed-air porosity from Christo Buizert (notebook - explore_empirical_firn_filters.ipynb)

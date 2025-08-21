@@ -10,6 +10,7 @@ from .filters import (
     fit_log_logistic_params,
     firn_convolve,
 )
+from pathlib import Path
 
 
 class FirnFilter:
@@ -180,14 +181,14 @@ class FirnFilter:
         return cls(g, dt)
 
     @classmethod
-    def from_firn_model(cls, path: str, **kwargs):
+    def from_firn_model(cls, file_name: str, path_root: str, **kwargs):
         """
         Load a FirnFilter from a file containing kernel parameters.
 
         Parameters
         ----------
-        path : str
-            Path to the file containing kernel parameters.
+        path_root : str
+            Path to the root directory containing kernel parameter files.
         **kwargs : dict, optional
             Additional keyword arguments for the kernel fitting.
 
@@ -197,6 +198,8 @@ class FirnFilter:
             An instance of FirnFilter loaded from the specified path.
         """
         # load the kernel from the file
+        # build path
+        path = Path(path_root) / file_name
         df = pd.read_csv(path)
 
         # extract dt, ensure it is constant

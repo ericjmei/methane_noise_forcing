@@ -47,6 +47,7 @@ def smooth_noise(cfg: DictConfig):
     firn_filter = FirnFilter.fit_from_config(
         kernel_type=cfg.firn_kernel.type,
         parameters=cfg.firn_kernel.parameters,
+        path_root=cfg.paths.firn_filters_root
     )
 
     # Apply the filter to the noise data
