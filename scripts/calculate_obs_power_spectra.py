@@ -89,6 +89,10 @@ def generate_obs_power_spectra(cfg: DictConfig):
     ds.attrs["mask_year"] = cfg.io[site].input.mask_year
     ds.attrs["gas_age_units"] = "years"
     ds.attrs["ch4_units"] = "ppb"
+    if site == "wdc06a":
+        order = 2
+    else:
+        order = 1
     ds.attrs["detrending_polynomial_order"] = order
 
     # Save the dataset
