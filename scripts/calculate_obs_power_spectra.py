@@ -8,6 +8,7 @@ import xarray as xr
 from pathlib import Path
 from astropy.timeseries import LombScargle
 from methane_noise_forcing.io import load_observational_data
+from methane_noise_forcing import detrend_obs
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s")
@@ -48,14 +49,7 @@ def generate_obs_power_spectra(cfg: DictConfig):
     )
 
     # Calculate power spectra with detrended data
-    if site == "wdc06a":
-        order = 2
-    else:
-        order = 1
-    logger.info(f"Detrending data with polynomial of order {order}")
-    obs_data_detrended = obs_data.copy()
-    coeffs = np.polyfit(obs_data_detrended["gas_age"], obs_data_detrended["ch4"], order)
-    obs_data_detrended["ch4"] -= np.polyval(coeffs, obs_data_detrended["gas_age"])
+    obs_data_detrended = detrend_obs(site, obs_data)
     logger.info("Calculating power spectrum for detrended data")
     _, power_spectrum_detrended_unnormalized = _calculate_power_spectrum(
         obs_data_detrended["gas_age"], obs_data_detrended["ch4"]
