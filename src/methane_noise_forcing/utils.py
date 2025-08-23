@@ -38,3 +38,26 @@ def detrend_obs(site_name, data: pd.DataFrame):
     data_detrended["ch4"] -= np.polyval(coeffs, data_detrended["gas_age"])
 
     return data_detrended
+
+def calculate_mean_and_ci(da, ci=0.95):
+    """
+    Calculate the mean and confidence interval of a DataArray.
+
+    Parameters
+    ----------
+    da : xr.DataArray
+        Input data array.
+    ci : float, optional
+        Confidence interval (default is 0.95).
+
+    Returns
+    -------
+    Tuple[xr.DataArray, xr.DataArray]
+        Mean, lower and upper confidence intervals.
+    """
+    mean = da.mean(dim='ensemble')
+    percentile_low = (1 - ci) / 2
+    percentile_high = (1 + ci) / 2
+    ci_low = da.quantile(percentile_low, dim='ensemble')
+    ci_high = da.quantile(percentile_high, dim='ensemble')
+    return mean, ci_low, ci_high
