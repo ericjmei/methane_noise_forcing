@@ -129,10 +129,13 @@ def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, r
     eta_ens = np.zeros((n_ens, n_steps))
     innovations = rng.standard_normal(size=(n_ens, n_steps, 2))
 
-    for k in range(n_ens):
-        state = np.zeros((2, n_steps))
-        for i in range(1, n_steps):
-            state[:, i] = params.F @ state[:, i - 1] + params.L @ innovations[k, i]
-        x_ens[k] = state[0]
-        eta_ens[k] = state[1]
+    # Vectorize simulation over the ensemble dimension
+    state = np.zeros((n_ens, 2, n_steps))
+    state[:, :, 0] = rng.standard_normal(size=(n_ens, 2))
+    for i in range(1, n_steps):
+        state[:, :, i] = state[:, :, i - 1] @ params.F.T + innovations[:, i, :] @ params.L.T
+
+    # unpack results
+    x_ens[:] = state[:, 0, :]
+    eta_ens[:] = state[:, 1, :]
     return x_ens, eta_ens
