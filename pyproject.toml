@@ -26,6 +26,7 @@ xarray = ">=2025.6.1,<2026"
 matplotlib = ">=3.10.1,<4"
 pillow = ">=11.1.0,<12"
 astropy = ">=7.1.0,<8"
+mscorefonts = ">=0.0.1,<0.0.2"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
