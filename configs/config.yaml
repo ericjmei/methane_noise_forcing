@@ -7,7 +7,7 @@ defaults_for_observations: &defaults_for_observations
   mask_year: 1800
 
 noise:
-  duration_timeseries: 1200 # Duration of time series in years
+  duration_timeseries: 4750 # Duration of time series in years
   n_ens: 1000 # Number of ensemble members
   dt: 1 # Time step in years
   time_units: years
@@ -19,14 +19,13 @@ sampling:
   series_offset: 150 # Offset in years for sampling for spinup
 
 paths:
-  project_root: "/Users/ericm/Documents/Research/methane_noise_forcing"
+  project_root: "/home/disk/p/emei/repos/methane_noise_forcing" # change this path
   data_dir: "${paths.project_root}/data"
-  configs_dir: "${paths.project_root}/configs" 
-  figures_dir: "${paths.project_root}/figures"
-  
-  # Derived paths (relative to project_root)
-  noise_realizations_root: "${paths.data_dir}/noise_realizations"
+  configs_dir: "${paths.project_root}/configs"
 
+  figures_dir: "/home/disk/hermes3/emei/methane_noise_forcing/figures" # change this path
+  
+  noise_realizations_root: "/home/disk/hermes3/emei/methane_noise_forcing/noise_realizations" # change this path
   observations_root: "${paths.data_dir}/observations"
   observations_cultivated: "${paths.observations_root}/cultivated"
   observations_power_spectra: "${paths.observations_root}/power_spectra"
