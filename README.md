@@ -26,6 +26,7 @@ paths:
   figures_dir: "/home/disk/hermes3/emei/methane_noise_forcing/figures" # change this path
   
   noise_realizations_root: "/home/disk/hermes3/emei/methane_noise_forcing/noise_realizations" # change this path
+  
   observations_root: "${paths.data_dir}/observations"
   observations_cultivated: "${paths.observations_root}/cultivated"
   observations_power_spectra: "${paths.observations_root}/power_spectra"
@@ -34,7 +35,7 @@ paths:
 ```
 The most common paths to change are `project_root/`, `figures_dir/`, and `noise_realizations_root/`. Small data files can be stored in `data_dir/`, but figures and large datasets (noise_realizations) should be stored elsewhere unless you modify the `.gitignore` file to include them.
 
-## Running the analysis
+## Running the forward simulations
 Analysis has been conducted for ice core methane records from from wdc05a (Michell et al. 2011), wdc06a (Mitchell et al. 2013), GISP2 (Michell et al. 2013), and NEEM (Rhodes et al. 2013, Rhodes et al. 2019). wdc05a and wdc06a are both from WAIS.
 
 Forward model simulations can be generated for an AR(1) forced by white noise (`white_noise_ar1`) or an AR(1) that is itself forced by an AR(1) forced by white noise (`two_timescale_ar1`). Simulations can then be smoothed by their respective firn filters and sampled to produce pseudo-observations that resemble the observations.
@@ -82,6 +83,6 @@ with initialize(version_base=None, config_path="../../configs"):
     ])
 ```
 
-The `overrides` argument in `compose` function similar to the command line arguments passed to the scripts.
+The `overrides` argument in `compose()` acts similarly to the command line arguments passed to the scripts.
 
 ALEX: I will put your figures in `notebooks/figures_for_PCC/` in the branch `PCC_figures` whenever I make them.
