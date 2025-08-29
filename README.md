@@ -19,7 +19,7 @@ Configs and file paths are managed by [hydra](https://hydra.cc/) in the `configs
 ```yaml
 # example
 paths:
-  project_root: "/home/disk/p/emei/repos/methane_noise_forcing" # change this path
+  project_root: "/home/disk/p/emei/repos/methane_noise_forcing" # change this path to the cloned project directory
   data_dir: "${paths.project_root}/data"
   configs_dir: "${paths.project_root}/configs"
 
@@ -52,7 +52,7 @@ Global arguments for generating noise realizations, such as the time step and th
 
 ```bash
 pixi run python ./scripts/generate_white_noise_ar1.py '+noise=white_noise_ar1'
-pixi run python ./scripts/generate_two_timescale_noise_ar1.py '+noise=two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' -m
+pixi run python ./scripts/generate_two_timescale_ar1.py '+noise=two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' -m
 ```
 
 Each noise realization is stored in its own directory in the path specified by `cfg.paths.noise_realizations_root` in `configs/config.yaml`.
