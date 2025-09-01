@@ -12,6 +12,10 @@ from .white_noise_ar1 import (
     calculate_white_noise_ar1_params,
     simulate_white_noise_ar1,
 )
+from .one_box import (
+    solve_ch4_onebox,
+    solve_ch4_anomaly_lifetime
+)
 
 __all__ = [
     "TwoTimescaleAR1Params",
@@ -20,4 +24,6 @@ __all__ = [
     "WhiteNoiseAR1Params",
     "calculate_white_noise_ar1_params",
     "simulate_white_noise_ar1",
+    "solve_ch4_onebox",
+    "solve_ch4_anomaly_lifetime"
 ]
