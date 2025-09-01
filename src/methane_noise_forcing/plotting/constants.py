@@ -21,6 +21,7 @@ matplotlib_rcparams = {
 # figure width (inches)
 fig_width_options = {
     "one_column": 3.42,
+    "two_column_small": 4.49,
     "two_column_large": 7
 }
 
