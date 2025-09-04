@@ -20,7 +20,7 @@ def calculate_kernel_self_lag(kernel: np.ndarray, lags: int) -> np.ndarray:
     np.ndarray
         Self-lag values for the specified lags.
     """
-    assert np.sum(kernel) == 1, "Kernel must be normalized to sum to 1."
+    assert np.isclose(np.sum(kernel), 1), "Kernel must be normalized to sum to 1."
     assert np.all(np.isclose(lags, np.round(lags))), "Lags must be integers."
     c_taus = np.zeros_like(lags, dtype=float)
     for i, lag in enumerate(lags):
