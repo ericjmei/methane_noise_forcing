@@ -39,7 +39,7 @@ def detrend_obs(site_name, data: pd.DataFrame):
 
     return data_detrended
 
-def calculate_mean_and_ci(da, ci=0.95):
+def calculate_mean_and_ci(da, ci=0.95, dim='ensemble'):
     """
     Calculate the mean and confidence interval of a DataArray.
 
@@ -49,6 +49,8 @@ def calculate_mean_and_ci(da, ci=0.95):
         Input data array.
     ci : float, optional
         Confidence interval (default is 0.95).
+    dim : str or Iterable, optional
+        Dimension along which to calculate the statistics (default is 'ensemble').
 
     Returns
     -------
@@ -59,11 +61,11 @@ def calculate_mean_and_ci(da, ci=0.95):
     ci_high : float
         Upper bound of the confidence interval.
     """
-    mean = da.mean(dim='ensemble')
+    mean = da.mean(dim=dim)
     percentile_low = (1 - ci) / 2
     percentile_high = (1 + ci) / 2
-    ci_low = da.quantile(percentile_low, dim='ensemble')
-    ci_high = da.quantile(percentile_high, dim='ensemble')
+    ci_low = da.quantile(percentile_low, dim=dim)
+    ci_high = da.quantile(percentile_high, dim=dim)
     return mean, ci_low, ci_high
 
 def psd_one_sided_cyclic(x, dt):
@@ -98,3 +100,60 @@ def psd_one_sided_cyclic(x, dt):
     if N % 2 == 0:         # don’t double Nyquist if present
         S1[-1] *= 0.5
     return f, S1
+
+def average_to_resolution(data, resolution, time_dim="time"):
+    """
+    Average data along the time dimension to a specified temporal resolution.
+    
+    This function bins the data along the time dimension and computes the mean
+    within each bin. The time coordinate is assumed to be in float years.
+    
+    Parameters
+    ----------
+    data : xr.DataArray or xr.Dataset
+        Input data to be averaged. Must contain the specified time dimension.
+    resolution : float
+        Temporal resolution in years for averaging (e.g., 1.0 for annual, 
+        0.5 for semi-annual, 10.0 for decadal).
+    time_dim : str, optional
+        Name of the time dimension to average over. Default is "time".
+        
+    Returns
+    -------
+    xr.DataArray or xr.Dataset
+        Data averaged to the specified temporal resolution. The time coordinate
+        will contain the left edge of each time bin.
+        
+    Examples
+    --------
+    >>> # Average monthly data to annual resolution
+    >>> annual_data = average_to_resolution(monthly_data, resolution=1.0)
+    >>> 
+    >>> # Average data to decadal resolution
+    >>> decadal_data = average_to_resolution(data, resolution=10.0)
+    """
+    # Extract time values from the data
+    time_values = data[time_dim].values
+    
+    # Determine the time range for binning
+    time_start = time_values.min()
+    time_end = time_values.max()
+    
+    # Create bin edges spanning the full time range
+    # Add resolution to ensure the last data point is included
+    bin_edges = np.arange(time_start, time_end + resolution, resolution)
+    
+    # Use the left edge of each bin as the new time coordinate
+    new_time_coords = bin_edges[:-1]
+    
+    # Group data by time bins and compute the mean within each bin
+    binned_data = data.groupby_bins(
+        time_dim, 
+        bins=bin_edges, 
+        labels=new_time_coords
+    ).mean(dim=time_dim)
+    
+    # Rename the binned dimension back to the original time dimension name
+    output_data = binned_data.rename({f"{time_dim}_bins": time_dim})
+    
+    return output_data
