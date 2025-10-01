@@ -6,7 +6,7 @@ Constants (colors, settings) for plotting.
 
 # rcparams
 large_font = 8.5
-small_font = 7
+small_font = 8.5
 matplotlib_rcparams = {
     "font.family": "sans-serif",
     "font.sans-serif": ["Arial"],
