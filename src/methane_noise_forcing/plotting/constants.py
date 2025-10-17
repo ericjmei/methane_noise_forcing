@@ -44,3 +44,16 @@ colors_vibrant = {
     "magenta": "#EE3377",
     "grey": "#BBBBBB",
 }
+colors_discrete = { # from Fig 19, can expand more as needed
+    9: "#882E72",
+    10: "#1965B0",
+    14: "#7BAFDE",
+    15: "#4EB265",
+    17: "#CAE0AB",
+    18: "#F7F056",
+    21: "#F4A736",
+    23: "#EE8026",
+    24: "#E8601C",
+    26: "#DC050C",
+    28: "#72190E",
+}
