@@ -78,7 +78,9 @@ def smooth_noise(cfg: DictConfig):
     for idx_ens in ds.ensemble.values:
         smoothed_data.append(
             firn_filter.apply(
-                ds["ch4"].isel(ensemble=idx_ens).values, dt_series=cfg.noise.dt
+                ds["ch4"].isel(ensemble=idx_ens).values, 
+                dt_series=cfg.noise.dt,
+                flip_kernel=True
             )
         )
     smoothed_data = np.array(smoothed_data)

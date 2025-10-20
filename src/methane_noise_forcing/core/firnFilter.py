@@ -238,7 +238,7 @@ class FirnFilter:
         else:
             raise ValueError(f"Unknown kernel type: {kernel_type}")
 
-    def apply(self, series: np.ndarray, dt_series=1.0) -> np.ndarray:
+    def apply(self, series: np.ndarray, dt_series=1.0, flip_kernel=False) -> np.ndarray:
         """
         Apply the firn filter to a time series.
 
@@ -250,6 +250,8 @@ class FirnFilter:
         dt_series : float, optional
             Sampling interval of ``series`` (default = 1.0). Units must match
             those of the filter kernel.
+        flip_kernel : bool, optional
+            If True, flip the kernel before applying. Default is False.
 
         Returns
         -------
@@ -257,6 +259,10 @@ class FirnFilter:
             The series after convolution with the kernel, aligned to the same
             time grid as the input ``series``.
         """
+        if flip_kernel:
+            kernel = self.kernel[::-1]
+        else:
+            kernel = self.kernel
         return firn_convolve(
-            series, np.arange(len(self.kernel)) * self.dt, self.kernel, dt_series
+            series, np.arange(len(kernel)) * self.dt, kernel, dt_series
         )
