@@ -1,4 +1,4 @@
 type: two_timescale_ar1
 tau_ch4: 10     # Time constant for methane lifetime
 tau_forcing: 100 # Time constant for forcing
-variance_ch4: 113 # Variance for methane, ppb^2
+variance_ch4: 108 # Variance for methane, ppb^2

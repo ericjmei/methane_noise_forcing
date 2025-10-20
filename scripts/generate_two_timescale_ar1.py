@@ -21,8 +21,30 @@ def generate_two_timescale(cfg: DictConfig):
     """
     Generate noise with two timescales based on the provided configuration.
 
-    Args:
-        cfg (DictConfig): Configuration object containing parameters for noise generation.
+    Parameters
+    ----------
+    cfg : omegaconf.DictConfig
+        Configuration object containing parameters for noise generation.
+        Includes:
+        - noise: timescale parameters (tau_ch4, tau_forcing), variance,
+          duration, ensemble size, time step, and output format.
+        - paths: directories such as noise_realizations_root.
+
+    Returns
+    -------
+    None
+        Writes a NetCDF or HDF5 file to:
+        <cfg.paths.noise_realizations_root>/<noise_name>/<noise_name>.{nc|h5}
+
+    Examples
+    --------
+    Run with default configuration from the project root:
+    $ pixi run python scripts/generate_two_timescale_ar1.py
+
+    Override selected parameters with Hydra syntax:
+    $ pixi run python ./scripts/generate_two_timescale_ar1.py \
+        '+noise=two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' \
+        -m
     """
     logger.info("Starting two-timescale AR(1) noise generation")
     logger.info(

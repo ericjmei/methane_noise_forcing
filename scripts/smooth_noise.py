@@ -25,8 +25,30 @@ def smooth_noise(cfg: DictConfig):
     """
     Smooth noise realizations using a firn filter based on the provided configuration.
 
-    Args:
-        cfg (DictConfig): Configuration object containing parameters for noise smoothing.
+    Parameters
+    ----------
+    cfg : omegaconf.DictConfig
+        Configuration object containing parameters for noise smoothing.
+        Includes:
+        - noise: noise realization parameters (tau_ch4, tau_forcing, dt, etc.).
+        - firn_kernel: firn filter settings (type, parameters, name).
+        - paths: directories such as noise_realizations_root and firn_filters_root.
+
+    Returns
+    -------
+    None
+        Writes a NetCDF file to:
+        <cfg.paths.noise_realizations_root>/<noise_name>/<firn_smoothing_name>/smoothed_<noise_name>.nc
+
+    Examples
+    --------
+    Run with default configuration from the project root:
+    $ pixi run python scripts/smooth_noise.py
+
+    Override selected parameters with Hydra syntax:
+    $ pixi run python ./scripts/smooth_noise.py \
+        '+noise=white_noise_ar1,two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' \
+        '+firn_kernel=firn_model_wais' -m
     """
     logger.info("Starting noise smoothing process")
 

@@ -29,8 +29,33 @@ def sample_noise(cfg: DictConfig):
     """
     Sample noise realizations based on the provided configuration.
 
-    Args:
-        cfg (DictConfig): Configuration object containing parameters for noise sampling.
+    Parameters
+    ----------
+    cfg : omegaconf.DictConfig
+        Configuration object containing parameters for noise sampling.
+        Includes:
+        - noise: noise realization parameters.
+        - firn_kernel: firn filter settings.
+        - sampling: site name, offset flags, and series offset.
+        - io: site-specific input/output parameters.
+        - paths: directories such as noise_realizations_root.
+
+    Returns
+    -------
+    None
+        Writes a NetCDF file to:
+        <cfg.paths.noise_realizations_root>/<noise_name>/<firn_name>/<sample_name>/sampled_smoothed_<noise_name>.nc
+
+    Examples
+    --------
+    Run with default configuration from the project root:
+    $ pixi run python scripts/sample_noise.py
+
+    Override selected parameters with Hydra syntax:
+    $ pixi run python ./scripts/sample_noise.py \
+        '+noise=white_noise_ar1,two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' \
+        '+firn_kernel=firn_model_wais' \
+        '+sampling=wdc06a' -m
     """
     logger.info("Starting noise sampling process")
 
