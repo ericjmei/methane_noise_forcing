@@ -33,10 +33,10 @@ paths:
   data_dir: "${paths.project_root}/data"
   configs_dir: "${paths.project_root}/configs"
 
-  figures_dir: "/home/disk/hermes3/emei/methane_noise_forcing/figures" # change this path
-  
-  noise_realizations_root: "/home/disk/hermes3/emei/methane_noise_forcing/noise_realizations" # change this path
-  
+  figures_dir: "/home/disk/hermes05/emei/methane_noise_forcing/figures" # change this path
+
+  noise_realizations_root: "/home/disk/hermes05/emei/methane_noise_forcing/noise_realizations" # change this path
+
   observations_root: "${paths.data_dir}/observations"
   observations_cultivated: "${paths.observations_root}/cultivated"
   observations_power_spectra: "${paths.observations_root}/power_spectra"
