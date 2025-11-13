@@ -5,10 +5,52 @@ Functionality for miscellaneous functions.
 """
 import pandas as pd
 import numpy as np
+import xarray as xr
 import logging
+from typing import Optional, Tuple, Union
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s")
 logger = logging.getLogger(__name__)
+
+ArrayLike = Union[np.ndarray, xr.DataArray, pd.DataFrame, pd.Series]
+
+def _ensure_1d_numeric(a: ArrayLike) -> Tuple[np.ndarray, Optional[Union[xr.DataArray, pd.Series, pd.DataFrame]]]:
+    """
+    Flattens input to 1D numpy array of floats, returns original structure if possible
+
+    Parameters
+    ----------
+    a : ArrayLike
+        Input array-like object (numpy array, xarray DataArray, pandas DataFrame or Series).
+
+    Returns
+    -------
+    Tuple[np.ndarray, Optional[Union[xr.DataArray, pd.Series, pd.DataFrame]]]
+        A tuple containing:
+        - 1D numpy array of floats.
+        - The original xarray DataArray, pandas Series, or pandas DataFrame if applicable; None otherwise.
+    """
+    if isinstance(a, xr.DataArray):
+        vals = np.asarray(a.values, dtype=float).ravel()
+        return vals, a
+
+    # Handle pandas Series: convert to 1D numpy array
+    if isinstance(a, pd.Series):
+        return np.asarray(a.values, dtype=float).ravel(), None
+
+    # Handle pandas DataFrame: only allow single-column DataFrame to avoid ambiguity
+    if isinstance(a, pd.DataFrame):
+        if a.shape[1] == 1:
+            # take the single column's values
+            vals = np.asarray(a.iloc[:, 0].values, dtype=float).ravel()
+            return vals, None
+        raise ValueError(
+            "DataFrame with multiple columns provided to _ensure_1d_numeric; "
+            "please pass a single-column DataFrame or a 1D array-like (e.g., Series or ndarray)."
+        )
+
+    # Fallback for numpy arrays and other array-like objects
+    return np.asarray(a, dtype=float).ravel(), None
 
 def detrend_obs(site_name, data: pd.DataFrame):
     """
