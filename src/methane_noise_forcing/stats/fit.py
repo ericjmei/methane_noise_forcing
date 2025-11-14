@@ -3,6 +3,7 @@
 """Functionality for fitting noise model parameters to data."""
 
 import numpy as np
+import warnings
 from typing import Tuple, Optional
 from scipy.stats import chi2, norm
 from scipy.optimize import minimize_scalar
@@ -11,6 +12,14 @@ def _check_length(x: np.ndarray, min_length: int = 3) -> None:
     """Raise ValueError if x has fewer than min_length finite points."""
     if x.size < min_length:
         raise ValueError(f"Series too short (need >= {min_length} finite points).")
+    
+def _check_near_unit_root(phi: float, thresh: float = 0.995) -> None:
+    """Raise Warning if |phi| >= thresh."""
+    if abs(phi) >= thresh:
+        warnings.warn(
+            f"Fitted AR(1) coefficient phi={phi:.4f} is very close to unit root; "
+            "estimates may be unreliable."
+        )
 
 def fit_ar1_conditional_ols(x: np.ndarray, demean: bool = True) -> Tuple[float, float]:
     """
@@ -52,6 +61,7 @@ def fit_ar1_conditional_ols(x: np.ndarray, demean: bool = True) -> Tuple[float, 
     phi = float(np.dot(x2, x1) / denom)
     resid = x2 - phi * x1
     sigma2 = float(np.dot(resid, resid) / (x.size - 1))  # conditional variance
+    _check_near_unit_root(phi)
     return phi, sigma2
 
 def fit_ar1_exact_mle(
@@ -127,6 +137,7 @@ def fit_ar1_exact_mle(
     sse_hat = float(np.dot(resid_hat, resid_hat))
     sigma2_hat = ( (1.0 - phi_hat**2) * (x[0] ** 2) + sse_hat ) / n
 
+    _check_near_unit_root(phi_hat)
     return phi_hat, float(sigma2_hat)
 
 def tau_from_phi(phi: float, dt: float) -> Optional[float]:
