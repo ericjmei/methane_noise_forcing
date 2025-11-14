@@ -8,11 +8,13 @@ from typing import Tuple, Optional
 from scipy.stats import chi2, norm
 from scipy.optimize import minimize_scalar
 
+
 def _check_length(x: np.ndarray, min_length: int = 3) -> None:
     """Raise ValueError if x has fewer than min_length finite points."""
     if x.size < min_length:
         raise ValueError(f"Series too short (need >= {min_length} finite points).")
-    
+
+
 def _check_near_unit_root(phi: float, thresh: float = 0.995) -> None:
     """Raise Warning if |phi| >= thresh."""
     if abs(phi) >= thresh:
@@ -20,6 +22,7 @@ def _check_near_unit_root(phi: float, thresh: float = 0.995) -> None:
             f"Fitted AR(1) coefficient phi={phi:.4f} is very close to unit root; "
             "estimates may be unreliable."
         )
+
 
 def fit_ar1_conditional_ols(x: np.ndarray, demean: bool = True) -> Tuple[float, float]:
     """
@@ -63,6 +66,7 @@ def fit_ar1_conditional_ols(x: np.ndarray, demean: bool = True) -> Tuple[float, 
     sigma2 = float(np.dot(resid, resid) / (x.size - 1))  # conditional variance
     _check_near_unit_root(phi)
     return phi, sigma2
+
 
 def fit_ar1_exact_mle(
     x: np.ndarray,
@@ -116,7 +120,7 @@ def fit_ar1_exact_mle(
         resid = x2 - phi * x1
         sse = float(np.dot(resid, resid))
         one_minus_phi2 = 1.0 - phi * phi
-        if one_minus_phi2 <= 0.0: # guard against phi approx ±1
+        if one_minus_phi2 <= 0.0:  # guard against phi approx ±1
             return np.inf
         term0 = one_minus_phi2 * (x[0] ** 2)
         sigma2_hat_phi = (term0 + sse) / n
@@ -135,17 +139,18 @@ def fit_ar1_exact_mle(
     # Recover sigma^2 at phi_hat
     resid_hat = x2 - phi_hat * x1
     sse_hat = float(np.dot(resid_hat, resid_hat))
-    sigma2_hat = ( (1.0 - phi_hat**2) * (x[0] ** 2) + sse_hat ) / n
+    sigma2_hat = ((1.0 - phi_hat**2) * (x[0] ** 2) + sse_hat) / n
 
     _check_near_unit_root(phi_hat)
     return phi_hat, float(sigma2_hat)
 
+
 def tau_from_phi(phi: float, dt: float) -> Optional[float]:
     """Continuous-time AR(1)/OU e-folding time tau = -dt / ln(phi), defined for 0<phi<1."""
-    
     if 0 < phi < 1:
         return -dt / np.log(phi)
     return np.nan
+
 
 def bootstrap_tau_parametric(
     phi_hat: float,
@@ -196,7 +201,7 @@ def bootstrap_tau_parametric(
         x_boot = np.empty(n_series, dtype=float)
         x_boot[0] = rng.normal(loc=0.0, scale=x0_sd)
         for t in range(1, n_series):
-            x_boot[t] = phi_hat * x_boot[t-1] + eps[t]
+            x_boot[t] = phi_hat * x_boot[t - 1] + eps[t]
 
         # Fit AR(1) to bootstrap sample
         if fit_method == "exact_mle":
@@ -209,28 +214,7 @@ def bootstrap_tau_parametric(
         # Compute tau from fitted phi
         tau_b = tau_from_phi(phi_b, dt)
         tau_bootstrap[i] = tau_b
-    
+
     tau_bootstrap = tau_bootstrap[~np.isnan(tau_bootstrap)]
     tau_ci = np.quantile(tau_bootstrap, [(1 - ci) / 2, 1 - (1 - ci) / 2])
     return tau_bootstrap, tuple(tau_ci)
-
-def bootstrap_bias(tau_hat, tau_bootstrap: np.ndarray) -> float:
-    """
-    Compute bootstrap bias estimate for AR(1) timescale tau.
-    Simple diagnostic of whether there are too few samples or if the autoregressive coefficient is close to 1.
-    Autoregressive coefficients close to 1 are either 1) real or 2) biased from coarse sampling resolution
-
-    Parameters
-    ----------
-    tau_hat : float
-        Fitted timescale from original data.
-    tau_bootstrap : np.ndarray
-        Bootstrap samples of the timescale tau.
-    
-    Returns
-    -------
-    bias : float
-        Bootstrap bias estimate.
-    """
-    bias = np.mean(tau_bootstrap) - tau_hat
-    return bias
