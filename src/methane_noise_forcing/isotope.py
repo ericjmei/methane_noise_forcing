@@ -3,13 +3,15 @@
 """
 Functionality for isotope-related calculations.
 """
+
 import numpy as np
 
 # ---- Reference standards (override if you prefer different evaluated values) ----
 # 13C/12C ratio of VPDB
 R13C_VPDB = 0.0112372  # ~1.12372e-2
 # D/H ratio of VSMOW
-RD_VSMOW = 155.76e-6   # ~1.5576e-4
+RD_VSMOW = 155.76e-6  # ~1.5576e-4
+
 
 # -----------------------------------------------------------------------------
 # Core ratio <-> delta helpers
@@ -56,11 +58,13 @@ def delta_from_ratio(R, R_standard, scale=1000.0):
     R = np.asarray(R)
     return scale * (R / R_standard - 1.0)
 
+
 # -----------------------------------------------------------------------------
 # From bulk + rare isotopologue to isotope ratio R (rare/abundant)
 # -----------------------------------------------------------------------------
 def ratio_from_bulk_rare(
-    bulk, rare,
+    bulk,
+    rare,
     *,
     bulk_includes_rare: bool = True,
     combinatorial: float = 1.0,
@@ -108,11 +112,12 @@ def ratio_from_bulk_rare(
     eps = np.finfo(float).tiny
     abundant_safe = np.where(abundant == 0, eps, abundant)
 
-    return (rare / (combinatorial * abundant_safe))
+    return rare / (combinatorial * abundant_safe)
 
 
 def delta_from_bulk_rare(
-    bulk, rare,
+    bulk,
+    rare,
     *,
     R_standard: float,
     bulk_includes_rare: bool = True,
@@ -140,17 +145,20 @@ def delta_from_bulk_rare(
         δ value.
     """
     R = ratio_from_bulk_rare(
-        bulk, rare,
+        bulk,
+        rare,
         bulk_includes_rare=bulk_includes_rare,
         combinatorial=combinatorial,
     )
     return delta_from_ratio(R, R_standard, scale=scale)
 
+
 # -----------------------------------------------------------------------------
 # Inverse: from bulk + delta to rare isotopologue concentration
 # -----------------------------------------------------------------------------
 def rare_from_bulk_delta(
-    bulk, delta,
+    bulk,
+    delta,
     *,
     R_standard: float,
     bulk_includes_rare: bool = True,
@@ -197,11 +205,13 @@ def rare_from_bulk_delta(
         # bulk is abundant
         return (g * R) * bulk
 
+
 # -----------------------------------------------------------------------------
 # Convenient methane-specific wrappers
 # -----------------------------------------------------------------------------
 def delta13C_from_bulk_rare(
-    bulk_CH4, rare_13CH4,
+    bulk_CH4,
+    rare_13CH4,
     *,
     bulk_includes_rare: bool = True,
     R_standard: float = R13C_VPDB,
@@ -211,7 +221,8 @@ def delta13C_from_bulk_rare(
     δ13C-CH4 (‰ VPDB by default) from total CH4 and 13CH4 concentrations.
     """
     return delta_from_bulk_rare(
-        bulk_CH4, rare_13CH4,
+        bulk_CH4,
+        rare_13CH4,
         R_standard=R_standard,
         bulk_includes_rare=bulk_includes_rare,
         combinatorial=1.0,
@@ -220,7 +231,8 @@ def delta13C_from_bulk_rare(
 
 
 def rare_13CH4_from_bulk_delta13C(
-    bulk_CH4, delta13C,
+    bulk_CH4,
+    delta13C,
     *,
     bulk_includes_rare: bool = True,
     R_standard: float = R13C_VPDB,
@@ -230,7 +242,8 @@ def rare_13CH4_from_bulk_delta13C(
     Inverse: 13CH4 concentration from (total CH4, δ13C).
     """
     return rare_from_bulk_delta(
-        bulk_CH4, delta13C,
+        bulk_CH4,
+        delta13C,
         R_standard=R_standard,
         bulk_includes_rare=bulk_includes_rare,
         combinatorial=1.0,
@@ -239,7 +252,8 @@ def rare_13CH4_from_bulk_delta13C(
 
 
 def deltaD_from_bulk_rare_CH3D(
-    bulk_CH4, rare_CH3D,
+    bulk_CH4,
+    rare_CH3D,
     *,
     bulk_includes_rare: bool = True,
     R_standard: float = RD_VSMOW,
@@ -253,7 +267,8 @@ def deltaD_from_bulk_rare_CH3D(
     with n_H = 4 for methane. Multi-deuterated species are neglected.
     """
     return delta_from_bulk_rare(
-        bulk_CH4, rare_CH3D,
+        bulk_CH4,
+        rare_CH3D,
         R_standard=R_standard,
         bulk_includes_rare=bulk_includes_rare,
         combinatorial=float(hydrogen_sites),
@@ -262,7 +277,8 @@ def deltaD_from_bulk_rare_CH3D(
 
 
 def rare_CH3D_from_bulk_deltaD(
-    bulk_CH4, deltaD,
+    bulk_CH4,
+    deltaD,
     *,
     bulk_includes_rare: bool = True,
     R_standard: float = RD_VSMOW,
@@ -275,7 +291,8 @@ def rare_CH3D_from_bulk_deltaD(
     rare = (n_H * R / (1 + n_H * R)) * bulk, if bulk includes rare.
     """
     return rare_from_bulk_delta(
-        bulk_CH4, deltaD,
+        bulk_CH4,
+        deltaD,
         R_standard=R_standard,
         bulk_includes_rare=bulk_includes_rare,
         combinatorial=float(hydrogen_sites),

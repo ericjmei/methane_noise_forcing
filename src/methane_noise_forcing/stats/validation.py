@@ -103,4 +103,4 @@ def bootstrap_bias(tau_hat, tau_bootstrap: np.ndarray) -> float:
         Bootstrap bias estimate.
     """
     bias = np.mean(tau_bootstrap) - tau_hat
-    return b
+    return bias

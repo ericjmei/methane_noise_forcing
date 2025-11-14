@@ -19,7 +19,6 @@ class FirnFilter:
         kernel: array of G(τ) values at τ = 0, dt, 2dt, ...
         dt: time-step of the kernel
         """
-
         self.kernel = kernel
         self.dt = dt
 

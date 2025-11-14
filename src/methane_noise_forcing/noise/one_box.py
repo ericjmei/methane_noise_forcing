@@ -1,7 +1,6 @@
 # src/methane_noise_forcing/noise/one_box.py
 # -*- coding: utf-8 -*-
-"""Functionality for simulating a methane box model with some forcing
-"""
+"""Functionality for simulating a methane box model with some forcing"""
 
 import numpy as np
 from dataclasses import dataclass
@@ -13,11 +12,12 @@ from scipy.integrate import solve_ivp
 TimeSeries = Tuple[np.ndarray, np.ndarray]
 ScalarOrCallableOrSeries = Union[float, Callable[[float], float], TimeSeries]
 
+
 @dataclass
 class OneBoxResult:
     """
     Container for results from solve_ch4_onebox.
-    
+
     Attributes
     ----------
     t : np.ndarray
@@ -27,10 +27,12 @@ class OneBoxResult:
     success : bool
         True if the solver succeeded, False otherwise
     """
+
     t: np.ndarray
     C: np.ndarray
     success: bool
     message: str
+
 
 def _as_timefunc(
     spec: ScalarOrCallableOrSeries,
@@ -52,7 +54,7 @@ def _as_timefunc(
         The kind of interpolation to use for (t, y) pairs.
     extrapolate : bool
         Whether to allow extrapolation beyond the input range.
-    
+
     Returns
     -------
     Callable[[float], float]
@@ -92,11 +94,19 @@ def _as_timefunc(
                 idx = np.where((tq < t[0]) | (tq > t[-1]), -1, idx)
             out = np.where(idx == -1, np.nan, y[idx])
             return out
+
         return lambda tt: float(f(tt))
     fill = "extrapolate" if extrapolate else (y[0], y[-1])
-    f = interp1d(t, y, kind="linear" if kind == "previous" else kind,
-                 bounds_error=False, fill_value=fill, assume_sorted=True)
+    f = interp1d(
+        t,
+        y,
+        kind="linear" if kind == "previous" else kind,
+        bounds_error=False,
+        fill_value=fill,
+        assume_sorted=True,
+    )
     return lambda tt: float(f(tt))
+
 
 def solve_ch4_onebox(
     *,
@@ -104,9 +114,9 @@ def solve_ch4_onebox(
     C0: float,
     S: ScalarOrCallableOrSeries,
     # Choose ONE of the following ways to specify λ(t):
-    lam: Optional[ScalarOrCallableOrSeries] = None,     # λ(t) directly
-    tau: Optional[ScalarOrCallableOrSeries] = None,     # lifetime τ(t) -> λ(t)=1/τ(t)
-    k: Optional[float] = None,                          # with OH(t): λ(t)=k*OH(t)
+    lam: Optional[ScalarOrCallableOrSeries] = None,  # λ(t) directly
+    tau: Optional[ScalarOrCallableOrSeries] = None,  # lifetime τ(t) -> λ(t)=1/τ(t)
+    k: Optional[float] = None,  # with OH(t): λ(t)=k*OH(t)
     OH: Optional[ScalarOrCallableOrSeries] = None,
     # Interpolation & solver options
     s_kind: Literal["linear", "nearest", "cubic", "previous"] = "cubic",
@@ -114,7 +124,7 @@ def solve_ch4_onebox(
     extrapolate: bool = False,
     method: str = "LSODA",
     enforce_nonnegative: bool = False,
-    **kwargs
+    **kwargs,
 ) -> OneBoxResult:
     """
     Unified solver for dC/dt = S(t) - λ(t) C(t)
@@ -150,7 +160,7 @@ def solve_ch4_onebox(
         Whether to enforce non-negativity of the solution C(t).
     **kwargs
         Additional keyword arguments passed to scipy.solve_ivp().
-    
+
     Returns
     -------
     OneBoxResult
@@ -182,7 +192,9 @@ def solve_ch4_onebox(
     S_of_t = _as_timefunc(S, name="S", kind=s_kind, extrapolate=extrapolate)
 
     # Build λ(t)
-    provided = sum([lam is not None, tau is not None, (k is not None and OH is not None)])
+    provided = sum(
+        [lam is not None, tau is not None, (k is not None and OH is not None)]
+    )
     if provided != 1:
         raise ValueError("Specify exactly ONE of lam, tau, or (k and OH).")
 
@@ -207,7 +219,7 @@ def solve_ch4_onebox(
         y0=[C0],
         t_eval=t_eval,
         method=method,
-        **kwargs
+        **kwargs,
     )
 
     C = sol.y[0]
@@ -216,11 +228,12 @@ def solve_ch4_onebox(
 
     return OneBoxResult(t=sol.t, C=C, success=sol.success, message=sol.message)
 
+
 def solve_ch4_anomaly_lifetime(
     t_eval: np.ndarray,
     C0_anom: float,
-    S_anom: ScalarOrCallableOrSeries,   # source-sink imbalance anomaly (ppb/time)
-    tau: ScalarOrCallableOrSeries = 10.0,   # years by default
+    S_anom: ScalarOrCallableOrSeries,  # source-sink imbalance anomaly (ppb/time)
+    tau: ScalarOrCallableOrSeries = 10.0,  # years by default
     **kwargs,
 ) -> OneBoxResult:
     """

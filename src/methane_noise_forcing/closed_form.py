@@ -4,6 +4,7 @@
 
 import numpy as np
 
+
 def calculate_kernel_self_lag(kernel: np.ndarray, lags: int) -> np.ndarray:
     """
     Calculate the self-lag of a kernel. If kernel is normalized, this is the autocorrelation function.
@@ -26,12 +27,13 @@ def calculate_kernel_self_lag(kernel: np.ndarray, lags: int) -> np.ndarray:
     for i, lag in enumerate(lags):
         if lag == 0:
             # Special case for lag=0: sum of squares
-            c_tau = np.sum(kernel ** 2)
+            c_tau = np.sum(kernel**2)
         else:
-            c_tau = np.sum(kernel[:-int(lag)] * kernel[int(lag):])
+            c_tau = np.sum(kernel[: -int(lag)] * kernel[int(lag) :])
         c_taus[i] = c_tau
 
     return c_taus
+
 
 def calculate_variance_ratio_filtered_to_instantaneous(
     c_taus: np.ndarray, instantaneous_autocorrelations: np.ndarray
@@ -65,6 +67,7 @@ def calculate_variance_ratio_filtered_to_instantaneous(
 
     return variance_ratio
 
+
 def calculate_two_timescale_autocorrelation(phi_0, phi_1, lags):
     """
     Calculate the two-timescale autocorrelation function.
@@ -88,12 +91,13 @@ def calculate_two_timescale_autocorrelation(phi_0, phi_1, lags):
     assert np.all(np.isclose(lags, np.round(lags))), "Lags must be integers."
     S_taus = np.array([_calculate_S(lag, phi_0, phi_1) for lag in lags])
     S_0 = _calculate_S(0, phi_0, phi_1)
-    return S_taus / S_0 
-    
+    return S_taus / S_0
+
+
 def _calculate_S(lag, phi_0, phi_1):
     """
     Calculate the 'S' function for two-timescale autocorrelation.
-    
+
     Parameters
     ----------
     lag : float
@@ -116,6 +120,7 @@ def _calculate_S(lag, phi_0, phi_1):
         term_3 = _calculate_term_1_3(lag, phi_0)
         return term_1 - term_2 + term_3
 
+
 def _calculate_term_1_3(lag, phi):
     """
     Helper function for the first and third term in the 'S' function for calculating two-timescale autocorrelation.
@@ -132,7 +137,8 @@ def _calculate_term_1_3(lag, phi):
     float
         The value of the first term in the 'S' function.
     """
-    return (phi ** (lag + 2)) / (1 - phi ** 2)
+    return (phi ** (lag + 2)) / (1 - phi**2)
+
 
 def _calculate_term_2(lag, phi_0, phi_1):
     """
@@ -152,9 +158,14 @@ def _calculate_term_2(lag, phi_0, phi_1):
     float
         The value of the second term in the 'S' function.
     """
-    return (phi_1 * phi_0 ** (lag + 1) + phi_0 * phi_1 ** (lag + 1)) / (1 - phi_0 * phi_1)
+    return (phi_1 * phi_0 ** (lag + 1) + phi_0 * phi_1 ** (lag + 1)) / (
+        1 - phi_0 * phi_1
+    )
 
-def calculate_two_timescale_variance_ratio_methane_to_ar1_forcing(tau_methane, tau_forcing):
+
+def calculate_two_timescale_variance_ratio_methane_to_ar1_forcing(
+    tau_methane, tau_forcing
+):
     """
     Calculate the variance ratio between AR(1) methane and its AR(1) forcing for a two-timescale system.
 
@@ -165,4 +176,4 @@ def calculate_two_timescale_variance_ratio_methane_to_ar1_forcing(tau_methane, t
     tau_forcing : float
         e-folding timescale of the AR(1) forcing process.
     """
-    return tau_methane ** 2 * tau_forcing / (tau_methane + tau_forcing)
+    return tau_methane**2 * tau_forcing / (tau_methane + tau_forcing)

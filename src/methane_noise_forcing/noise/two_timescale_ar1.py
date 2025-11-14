@@ -92,7 +92,9 @@ def calculate_two_timescale_ar1_params(
     return TwoTimescaleAR1Params(A, B, F, M, expM, Q0, L, sigma_f, sigma_eta)
 
 
-def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, rng: np.random.Generator = None):
+def simulate_two_timescale_ar1(
+    tau_x, tau_eta, variance_x, dt, n_steps, n_ens, rng: np.random.Generator = None
+):
     """
     Simulate a two‐timescale AR(1) process with given parameters.
 
@@ -133,7 +135,9 @@ def simulate_two_timescale_ar1(tau_x, tau_eta, variance_x, dt, n_steps, n_ens, r
     state = np.zeros((n_ens, 2, n_steps))
     state[:, :, 0] = rng.standard_normal(size=(n_ens, 2))
     for i in range(1, n_steps):
-        state[:, :, i] = state[:, :, i - 1] @ params.F.T + innovations[:, i, :] @ params.L.T
+        state[:, :, i] = (
+            state[:, :, i - 1] @ params.F.T + innovations[:, i, :] @ params.L.T
+        )
 
     # unpack results
     x_ens[:] = state[:, 0, :]

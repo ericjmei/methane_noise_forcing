@@ -3,6 +3,7 @@
 """
 Functionality for miscellaneous functions.
 """
+
 import pandas as pd
 import numpy as np
 import xarray as xr
@@ -14,7 +15,10 @@ logger = logging.getLogger(__name__)
 
 ArrayLike = Union[np.ndarray, xr.DataArray, pd.DataFrame, pd.Series]
 
-def _ensure_1d_numeric(a: ArrayLike) -> Tuple[np.ndarray, Optional[Union[xr.DataArray, pd.Series, pd.DataFrame]]]:
+
+def _ensure_1d_numeric(
+    a: ArrayLike,
+) -> Tuple[np.ndarray, Optional[Union[xr.DataArray, pd.Series, pd.DataFrame]]]:
     """
     Flattens input to 1D numpy array of floats, returns original structure if possible
 
@@ -52,6 +56,7 @@ def _ensure_1d_numeric(a: ArrayLike) -> Tuple[np.ndarray, Optional[Union[xr.Data
     # Fallback for numpy arrays and other array-like objects
     return np.asarray(a, dtype=float).ravel(), None
 
+
 def detrend_obs(site_name, data: pd.DataFrame):
     """
     Detrend observed data. "wdc06a" uses a 2nd order polynomial, all others use 1st order.
@@ -73,7 +78,7 @@ def detrend_obs(site_name, data: pd.DataFrame):
     else:
         order = 1
     logger.info(f"Detrending data with polynomial of order {order}")
-    
+
     coeffs = np.polyfit(data["gas_age"], data["ch4"], order)
 
     data_detrended = data.copy()
@@ -81,7 +86,8 @@ def detrend_obs(site_name, data: pd.DataFrame):
 
     return data_detrended
 
-def calculate_mean_and_ci(da, ci=0.95, dim='ensemble'):
+
+def calculate_mean_and_ci(da, ci=0.95, dim="ensemble"):
     """
     Calculate the mean and confidence interval of a DataArray.
 
@@ -110,6 +116,7 @@ def calculate_mean_and_ci(da, ci=0.95, dim='ensemble'):
     ci_high = da.quantile(percentile_high, dim=dim)
     return mean, ci_low, ci_high
 
+
 def psd_one_sided_cyclic(x, dt):
     """
     One-sided PSD S_f^{(1)}(f) so that var(x) ≈ ∫_0^{f_N} S_f^{(1)}(f) df.
@@ -135,67 +142,66 @@ def psd_one_sided_cyclic(x, dt):
     """
     x = np.asarray(x, float) - np.mean(x)
     N = x.size
-    X = np.fft.rfft(x)                       # nonnegative freqs
-    f = np.fft.rfftfreq(N, d=dt)             # cycles/yr
+    X = np.fft.rfft(x)  # nonnegative freqs
+    f = np.fft.rfftfreq(N, d=dt)  # cycles/yr
     S1 = (2.0 * dt / N) * (X.conj() * X).real
-    S1[0] *= 0.5           # don’t double DC
-    if N % 2 == 0:         # don’t double Nyquist if present
+    S1[0] *= 0.5  # don’t double DC
+    if N % 2 == 0:  # don’t double Nyquist if present
         S1[-1] *= 0.5
     return f, S1
+
 
 def average_to_resolution(data, resolution, time_dim="time"):
     """
     Average data along the time dimension to a specified temporal resolution.
-    
+
     This function bins the data along the time dimension and computes the mean
     within each bin. The time coordinate is assumed to be in float years.
-    
+
     Parameters
     ----------
     data : xr.DataArray or xr.Dataset
         Input data to be averaged. Must contain the specified time dimension.
     resolution : float
-        Temporal resolution in years for averaging (e.g., 1.0 for annual, 
+        Temporal resolution in years for averaging (e.g., 1.0 for annual,
         0.5 for semi-annual, 10.0 for decadal).
     time_dim : str, optional
         Name of the time dimension to average over. Default is "time".
-        
+
     Returns
     -------
     xr.DataArray or xr.Dataset
         Data averaged to the specified temporal resolution. The time coordinate
         will contain the left edge of each time bin.
-        
+
     Examples
     --------
     >>> # Average monthly data to annual resolution
     >>> annual_data = average_to_resolution(monthly_data, resolution=1.0)
-    >>> 
+    >>>
     >>> # Average data to decadal resolution
     >>> decadal_data = average_to_resolution(data, resolution=10.0)
     """
     # Extract time values from the data
     time_values = data[time_dim].values
-    
+
     # Determine the time range for binning
     time_start = time_values.min()
     time_end = time_values.max()
-    
+
     # Create bin edges spanning the full time range
     # Add resolution to ensure the last data point is included
     bin_edges = np.arange(time_start, time_end + resolution, resolution)
-    
+
     # Use the left edge of each bin as the new time coordinate
     new_time_coords = bin_edges[:-1]
-    
+
     # Group data by time bins and compute the mean within each bin
     binned_data = data.groupby_bins(
-        time_dim, 
-        bins=bin_edges, 
-        labels=new_time_coords
+        time_dim, bins=bin_edges, labels=new_time_coords
     ).mean(dim=time_dim)
-    
+
     # Rename the binned dimension back to the original time dimension name
     output_data = binned_data.rename({f"{time_dim}_bins": time_dim})
-    
+
     return output_data

@@ -6,9 +6,12 @@ This module provides functions to create standardized file names for noise simul
 firn smoothing, and other related processes. The file names are constructed
 using the parameters provided in the configuration object, ensuring consistency
 """
+
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -21,6 +24,7 @@ def generate_noise_realization_name(cfg) -> str:
         logger.error(f"Unsupported noise type: {cfg.noise.type}")
         raise ValueError(f"Unsupported noise type: {cfg.noise.type}")
 
+
 def generate_white_noise_ar1_name(cfg) -> str:
     """
     Generate a file or directory name for white noise AR(1) noise simulation.
@@ -29,7 +33,7 @@ def generate_white_noise_ar1_name(cfg) -> str:
     ----------
     cfg : Config
         Configuration object containing noise parameters.
-    
+
     Returns
     -------
     str
@@ -44,6 +48,7 @@ def generate_white_noise_ar1_name(cfg) -> str:
     )
 
     return name
+
 
 def generate_two_timescale_ar1_name(cfg) -> str:
     """
@@ -70,6 +75,7 @@ def generate_two_timescale_ar1_name(cfg) -> str:
 
     return name
 
+
 def generate_firn_smoothing_name(cfg) -> str:
     """
     Generate a file or directory name for firn smoothing.
@@ -85,11 +91,7 @@ def generate_firn_smoothing_name(cfg) -> str:
         Formatted file name for the firn smoothing.
     """
     if cfg.firn_kernel.type == "firn_model":
-        name = (
-            f"firn_"
-            f"kernel-{cfg.firn_kernel.type}_"
-            f"name-{cfg.firn_kernel.name}"
-        )
+        name = f"firn_kernel-{cfg.firn_kernel.type}_name-{cfg.firn_kernel.name}"
     else:
         name = (
             f"firn_"
@@ -100,6 +102,7 @@ def generate_firn_smoothing_name(cfg) -> str:
         )
 
     return name
+
 
 def generate_sample_name(cfg) -> str:
     """

@@ -6,7 +6,9 @@ import pandas as pd
 from pathlib import Path
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -92,7 +94,10 @@ def load_rhodesandbrook2019(file_path: Path, mask_year: float) -> pd.DataFrame:
     df = _mask_data_after_year(df, mask_year)  # mask data after 1800
     return df
 
-def load_observational_data(site_name: str, file_path: Path, mask_year: float) -> pd.DataFrame:
+
+def load_observational_data(
+    site_name: str, file_path: Path, mask_year: float
+) -> pd.DataFrame:
     """
     Load observational data for a specific site.
 

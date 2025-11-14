@@ -22,7 +22,7 @@ matplotlib_rcparams = {
 fig_width_options = {
     "one_column": 3.42,
     "two_column_small": 4.49,
-    "two_column_large": 7
+    "two_column_large": 7,
 }
 
 # colors (using bright and vibrant schemes from https://sronpersonalpages.nl/~pault/)
@@ -44,7 +44,7 @@ colors_vibrant = {
     "magenta": "#EE3377",
     "grey": "#BBBBBB",
 }
-colors_discrete = { # from Fig 19, can expand more as needed
+colors_discrete = {  # from Fig 19, can expand more as needed
     9: "#882E72",
     10: "#1965B0",
     14: "#7BAFDE",
