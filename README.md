@@ -52,8 +52,10 @@ If not using pixi, you can run the analysis with the same code by omitting `pixi
 Global arguments for generating noise realizations, such as the time step and the number of ensemble members, are found in `configs/config.yaml`. The methane lifetime, forcing timescales, and the target atmospheric (instantaneous) methane variance, along with other miscellaneous parameters can be specified in the configs in `configs/noise/`. To generate noise realizations, run:
 
 ```bash
-pixi run python ./scripts/generate_white_noise_ar1.py '+noise=white_noise_ar1'
-pixi run python ./scripts/generate_two_timescale_ar1.py '+noise=two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' -m
+pixi run python ./scripts/generate_white_noise_ar1.py \
+'+noise=white_noise_ar1'
+pixi run python ./scripts/generate_two_timescale_ar1.py \
+'+noise=two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' -m
 ```
 
 Each noise realization is stored in its own directory in the path specified by `cfg.paths.noise_realizations_root` in `configs/config.yaml`.
@@ -62,8 +64,12 @@ Each noise realization is stored in its own directory in the path specified by `
 Configs for smoothing via firn filtering can be found in `configs/firn_kernel/`. The configs that start with `firn_model_` direct the scripts to look for the empirical firn filters in the `data/firn_filters/` directory. Configs in `configs/sampling/` direct the scripts to look for the sampling structure of the observations. These actions can be performed by:
 
 ```bash
-pixi run python ./scripts/smooth_noise.py '+noise=white_noise_ar1,two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' '+firn_kernel=firn_model_wais' -m
-pixi run python ./scripts/sample_noise.py '+noise=white_noise_ar1,two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' '+firn_kernel=firn_model_wais' '+sampling=wdc06a' -m
+pixi run python ./scripts/smooth_noise.py \
+'+noise=white_noise_ar1,two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' \
+'+firn_kernel=firn_model_wais' -m
+pixi run python ./scripts/sample_noise.py \
+'+noise=white_noise_ar1,two_timescale_ar1_0-1,two_timescale_ar1_1,two_timescale_ar1_10,two_timescale_ar1_100' \
+'+firn_kernel=firn_model_wais' '+sampling=wdc06a' -m
 ```
 
 Quick plug: notice how hydra automatically sweeps all permutations of the configs with the `-m` flag!
