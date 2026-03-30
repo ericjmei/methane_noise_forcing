@@ -69,7 +69,7 @@ def smooth_noise(cfg: DictConfig):
     firn_filter = FirnFilter.fit_from_config(
         kernel_type=cfg.firn_kernel.type,
         parameters=cfg.firn_kernel.parameters,
-        path_root=cfg.paths.firn_filters_root
+        path_root=cfg.paths.firn_filters_root,
     )
 
     # Apply the filter to the noise data
@@ -78,9 +78,9 @@ def smooth_noise(cfg: DictConfig):
     for idx_ens in ds.ensemble.values:
         smoothed_data.append(
             firn_filter.apply(
-                ds["ch4"].isel(ensemble=idx_ens).values, 
+                ds["ch4"].isel(ensemble=idx_ens).values,
                 dt_series=cfg.noise.dt,
-                flip_kernel=True
+                flip_kernel=True,
             )
         )
     smoothed_data = np.array(smoothed_data)
